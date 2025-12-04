@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>From Large Angles to Consistent Faces: Identity-Preserving Video Generation via Mixture of Facial Experts</title>
+    <title>Collaborative Face Experts Fusion in Video Generation: Boosting Identity Consistency Across Large Face Poses</title>
     <style>
         * {
             margin: 0;
@@ -89,13 +89,20 @@
         /* Experiments Section - Video Grid */
         .video-grid {
             display: grid;
-            grid-template-columns: 120px repeat(5, 1fr);
             gap: 15px;
             background: white;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             margin-bottom: 20px;
+        }
+
+        .video-grid-6-cols {
+            grid-template-columns: 120px repeat(6, 1fr);
+        }
+
+        .video-grid-3-cols {
+            grid-template-columns: 120px repeat(3, 1fr);
         }
 
         .method-label {
@@ -215,7 +222,8 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>From Large Angles to Consistent Faces:<br>Identity-Preserving Video Generation via Mixture of Facial Experts</h1>
+            <h1>Collaborative Face Experts Fusion in Video Generation: Boosting Identity
+Consistency Across Large Face Poses</h1>
             <div class="subtitle">A Novel Approach for High-Quality Face-Consistent Video Generation</div>
         </div>
 
@@ -224,9 +232,7 @@
             <h2>Abstract</h2>
             <p>Current video generation models struggle with identity preservation under large face poses, primarily facing two challenges: the difficulty in exploring an effective mechanism to integrate identity features into DiT architectures, and the lack of targeted coverage of large face poses in existing open-source video datasets. </p>
             
-            <p>To address these, we present two key innovations. First, we propose Collaborative Face Experts Fusion (\method), which dynamically fuses complementary signals from three specialized experts within the DiT backbone: an identity expert that captures cross-pose invariant features, a semantic expert that encodes high-level visual context, and a detail expert that preserves pixel-level attributes such as skin texture and color gradients.</p>
-            
-            <p>Second, we introduce a data curation pipeline comprising three key components: Face Constraints to ensure diverse large-pose coverage, Identity Consistency to maintain stable identity across frames, and Speech Disambiguation to align textual captions with actual speaking behavior. This pipeline yields \ourdata-180K, a large-scale dataset of pose-annotated video clips designed for identity-preserving video generation.</p>
+            <p>To address these, we present two key innovations. First, we propose <b>Collaborative Face Experts Fusion (CoFE)</b>, which dynamically fuses complementary signals from three specialized experts within the DiT backbone: an identity expert that captures cross-pose invariant features, a semantic expert that encodes high-level visual context, and a detail expert that preserves pixel-level attributes such as skin texture and color gradients. Second, we introduce a data curation pipeline comprising three key components: Face Constraints to ensure diverse large-pose coverage, Identity Consistency to maintain stable identity across frames, and Speech Disambiguation to align textual captions with actual speaking behavior. This pipeline yields LaFID-180K, a large-scale dataset of pose-annotated video clips designed for identity-preserving video generation.</p>
             
             <p>Experimental results on several benchmarks demonstrate that our approach significantly outperforms state-of-the-art methods in face similarity, FID, and CLIP semantic alignment.</p>
         </section>
@@ -248,18 +254,14 @@
             <h2>Experiments</h2>
             <h3>Visualization Comparison on LaFID-Bench and VIP-Test</h3>
             
-            <div class="video-grid">
-                <!-- Header row -->
+            <div class="video-grid video-grid-3-cols">
+                <!-- Header row 1 -->
                 <div></div>
                 <div class="method-label">CogVideoX</div>
                 <div class="method-label">LTX-Video</div>
                 <div class="method-label">ConsisID</div>
-                <div class="method-label">Wan2.1</div>
-                <div class="method-label">Wan2.2</div>
-                <div class="method-label featured">Wan2.2 w/ CoFE</div>
 
-
-                <!-- Sample 1 row -->
+                <!-- Sample 1, Row 1 -->
                 <div class="sample-header">Sample 1</div>
                 <div class="video-cell">
                     <video controls loop muted playsinline>
@@ -276,23 +278,8 @@
                         <source src="videos/demo1/ConsisID.mp4" type="video/mp4">
                     </video>
                 </div>
-                <div class="video-cell">
-                    <video controls loop muted playsinline>
-                        <source src="videos/demo1/Wan2.1-I2V.mp4" type="video/mp4">
-                    </video>
-                </div>
-                <div class="video-cell">
-                    <video controls loop muted playsinline>
-                        <source src="videos/demo1/Wan2.2-I2V.mp4" type="video/mp4">
-                    </video>
-                </div>
-                <div class="video-cell">
-                    <video controls loop muted playsinline>
-                        <source src="videos/demo1/Wan2.2-CoFE.mp4" type="video/mp4">
-                    </video>
-                </div>
 
-                <!-- Sample 2 row -->
+                <!-- Sample 2, Row 1 -->
                 <div class="sample-header">Sample 2</div>
                 <div class="video-cell">
                     <video controls loop muted playsinline>
@@ -309,6 +296,53 @@
                         <source src="videos/demo2/ConsisID.mp4" type="video/mp4">
                     </video>
                 </div>
+
+                <!-- Sample 3, Row 1 -->
+                <div class="sample-header">Sample 3</div>
+                <div class="video-cell">
+                    <video controls loop muted playsinline>
+                        <source src="videos/demo3/CogVideoX_I2V.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="video-cell">
+                    <video controls loop muted playsinline>
+                        <source src="videos/demo3/LTX-2B.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="video-cell">
+                    <video controls loop muted playsinline>
+                        <source src="videos/demo3/ConsisID.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </div>
+
+            <div class="video-grid video-grid-3-cols">
+                <!-- Header row 2 -->
+                <div></div>
+                <div class="method-label">Wan2.1</div>
+                <div class="method-label">Wan2.2</div>
+                <div class="method-label featured">Wan2.2 w/ CoFE</div>
+
+                <!-- Sample 1, Row 2 -->
+                <div class="sample-header">Sample 1</div>
+                <div class="video-cell">
+                    <video controls loop muted playsinline>
+                        <source src="videos/demo1/Wan2.1-I2V.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="video-cell">
+                    <video controls loop muted playsinline>
+                        <source src="videos/demo1/Wan2.2-I2V.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="video-cell">
+                    <video controls loop muted playsinline>
+                        <source src="videos/demo1/Wan2.2-CoFE.mp4" type="video/mp4">
+                    </video>
+                </div>
+
+                <!-- Sample 2, Row 2 -->
+                <div class="sample-header">Sample 2</div>
                 <div class="video-cell">
                     <video controls loop muted playsinline>
                         <source src="videos/demo2/Wan2.1-I2V.mp4" type="video/mp4">
@@ -319,10 +353,33 @@
                         <source src="videos/demo2/Wan2.2-I2V.mp4" type="video/mp4">
                     </video>
                 </div>
+                <div class="video-cell">
+                    <video controls loop muted playsinline>
+                        <source src="videos/demo2/Wan2.2-CoFE.mp4" type="video/mp4">
+                    </video>
+                </div>
+
+                <!-- Sample 3, Row 2 -->
+                <div class="sample-header">Sample 3</div>
+                <div class="video-cell">
+                    <video controls loop muted playsinline>
+                        <source src="videos/demo3/Wan2.1-I2V.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="video-cell">
+                    <video controls loop muted playsinline>
+                        <source src="videos/demo3/Wan2.2-I2V.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="video-cell">
+                    <video controls loop muted playsinline>
+                        <source src="videos/demo3/Wan2.2-CoFE.mp4" type="video/mp4">
+                    </video>
+                </div>
             </div>
 
-            <h3>Visualization Comparison with Close-sourced Model</h3>
-            <div class="video-grid">
+            <h3>Visualization Comparison with Closed-Source Models</h3>
+            <div class="video-grid video-grid-3-cols">
                 <!-- Header row -->
                 <div></div>
                 <div class="method-label">Kling 1.6</div>
@@ -332,17 +389,33 @@
                 <div class="sample-header">Sample 1</div>
                 <div class="video-cell">
                     <video controls loop muted playsinline>
-                        <source src="videos/demo1/CogVideoX_I2V.mp4" type="video/mp4">
+                        <source src="videos/closed_model/kling/sample1.mp4" type="video/mp4">
                     </video>
                 </div>
                 <div class="video-cell">
                     <video controls loop muted playsinline>
-                        <source src="videos/demo1/LTX-2B.mp4" type="video/mp4">
+                        <source src="videos/closed_model/vidu/sample1.mp4" type="video/mp4">
                     </video>
                 </div>
                 <div class="video-cell">
                     <video controls loop muted playsinline>
-                        <source src="videos/demo1/ConsisID.mp4" type="video/mp4">
+                        <source src="videos/closed_model/ours/sample1.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="sample-header">Sample 2</div>
+                <div class="video-cell">
+                    <video controls loop muted playsinline>
+                        <source src="videos/closed_model/kling/sample2.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="video-cell">
+                    <video controls loop muted playsinline>
+                        <source src="videos/closed_model/vidu/sample2.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="video-cell">
+                    <video controls loop muted playsinline>
+                        <source src="videos/closed_model/ours/sample2.mp4" type="video/mp4">
                     </video>
                 </div>
             </div>
@@ -350,7 +423,6 @@
             <div class="controls">
                 <button onclick="playAll()">Play All</button>
                 <button onclick="pauseAll()">Pause All</button>
-                <button onclick="muteAll()">Toggle Mute</button>
             </div>
         </section>
     </div>
@@ -364,13 +436,6 @@
         function pauseAll() {
             document.querySelectorAll('video').forEach(video => video.pause());
         }
-
-        function muteAll() {
-            const videos = document.querySelectorAll('video');
-            const isMuted = videos[0].muted;
-            videos.forEach(video => video.muted = !isMuted);
-        }
-
         // Auto play on hover
         document.querySelectorAll('.video-cell').forEach(cell => {
             const video = cell.querySelector('video');
