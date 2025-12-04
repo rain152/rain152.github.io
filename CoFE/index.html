@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>From Large Angles to Consistent Faces: Identity-Preserving Video Generation via Mixture of Facial Experts</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f9fa;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header Styles */
+        .header {
+            text-align: center;
+            padding: 40px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin-bottom: 40px;
+            border-radius: 12px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            font-weight: 300;
+            margin-bottom: 10px;
+            line-height: 1.2;
+        }
+
+        .header .subtitle {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        /* Section Styles */
+        .section {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            padding: 30px;
+        }
+
+        .section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 2em;
+            font-weight: 400;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .section h3 {
+            color: #555;
+            margin: 20px 0 15px 0;
+            font-size: 1.3em;
+        }
+
+        .section p {
+            margin-bottom: 15px;
+            color: #666;
+            font-size: 1.05em;
+        }
+
+        .placeholder-content {
+            background: #f8f9fa;
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            color: #888;
+            font-style: italic;
+        }
+
+        /* Experiments Section - Video Grid */
+        .video-grid {
+            display: grid;
+            grid-template-columns: 120px repeat(5, 1fr);
+            gap: 15px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .method-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #e9ecef;
+            border-radius: 6px;
+            padding: 10px;
+            font-weight: 500;
+            color: #666;
+            text-align: center;
+        }
+
+        .method-label.featured {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            position: relative;
+        }
+
+        .method-label.featured::after {
+            content: "⭐";
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            font-size: 16px;
+        }
+
+        .sample-header {
+            background: #f8f9fa;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+            color: #555;
+            text-align: center;
+            border-left: 4px solid #ddd;
+        }
+
+        .video-cell {
+            border-radius: 6px;
+            overflow: hidden;
+            background: #f8f9fa;
+            aspect-ratio: 16/9;
+        }
+
+        .video-cell video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        .video-cell:hover video {
+            transform: scale(1.02);
+            transition: transform 0.2s ease;
+        }
+
+        .controls {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .controls button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            margin: 0 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .controls button:hover {
+            background: #5a67d8;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .video-grid {
+                grid-template-columns: 100px repeat(3, 1fr);
+                gap: 10px;
+            }
+            
+            .method-label, .sample-header {
+                font-size: 12px;
+                padding: 8px;
+            }
+
+            .section {
+                padding: 20px;
+            }
+
+            .method-image {
+                max-width: 100%;
+            }
+        }
+
+        /* Method image styles */
+        .method-image {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>From Large Angles to Consistent Faces:<br>Identity-Preserving Video Generation via Mixture of Facial Experts</h1>
+            <div class="subtitle">A Novel Approach for High-Quality Face-Consistent Video Generation</div>
+        </div>
+
+        <!-- Abstract Section -->
+        <section class="section">
+            <h2>Abstract</h2>
+            <p>Current video generation models struggle with identity preservation under large face poses, primarily facing two challenges: the difficulty in exploring an effective mechanism to integrate identity features into DiT architectures, and the lack of targeted coverage of large face poses in existing open-source video datasets. </p>
+            
+            <p>To address these, we present two key innovations. First, we propose Collaborative Face Experts Fusion (\method), which dynamically fuses complementary signals from three specialized experts within the DiT backbone: an identity expert that captures cross-pose invariant features, a semantic expert that encodes high-level visual context, and a detail expert that preserves pixel-level attributes such as skin texture and color gradients.</p>
+            
+            <p>Second, we introduce a data curation pipeline comprising three key components: Face Constraints to ensure diverse large-pose coverage, Identity Consistency to maintain stable identity across frames, and Speech Disambiguation to align textual captions with actual speaking behavior. This pipeline yields \ourdata-180K, a large-scale dataset of pose-annotated video clips designed for identity-preserving video generation.</p>
+            
+            <p>Experimental results on several benchmarks demonstrate that our approach significantly outperforms state-of-the-art methods in face similarity, FID, and CLIP semantic alignment.</p>
+        </section>
+
+        <!-- Method Section -->
+        <section class="section">
+            <h2>Method</h2>
+            <img src="assets/CoFE_pipeline.jpg" alt="Method Overview" class="method-image">
+        </section>
+
+        <!-- Dataset Section -->
+        <section class="section">
+            <h2>Data Process</h2>
+            <img src="assets/data_process.jpg" alt="Dataset Processing Pipeline" class="method-image">
+        </section>
+
+        <!-- Experiments Section -->
+        <section class="section">
+            <h2>Experiments</h2>
+            <h3>Visualization Comparison on LFA Bench</h3>
+            
+            <div class="video-grid">
+                <!-- Header row -->
+                <div></div>
+                <div class="method-label">CogVideoX</div>
+                <div class="method-label">LTX-Video</div>
+                <div class="method-label">ConsisID</div>
+                <div class="method-label">Wan2.1</div>
+                <div class="method-label">Wan2.2</div>
+                <div class="method-label featured">Wan2.2 w/ CoFE</div>
+
+
+                <!-- Sample 1 row -->
+                <div class="sample-header">Sample 1</div>
+                <div class="video-cell">
+                    <video controls loop muted playsinline>
+                        <source src="videos/demo1/CogVideoX_I2V.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="video-cell">
+                    <video controls loop muted playsinline>
+                        <source src="videos/demo1/LTX-2B.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="video-cell">
+                    <video controls loop muted playsinline>
+                        <source src="videos/demo1/ConsisID.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="video-cell">
+                    <video controls loop muted playsinline>
+                        <source src="videos/demo1/Wan2.1-I2V.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="video-cell">
+                    <video controls loop muted playsinline>
+                        <source src="videos/demo1/Wan2.2-I2V.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="video-cell">
+                    <video controls loop muted playsinline>
+                        <source src="videos/demo1/Wan2.2-CoFE.mp4" type="video/mp4">
+                    </video>
+                </div>
+
+                <!-- Sample 2 row -->
+                <div class="sample-header">Sample 2</div>
+                <div class="video-cell">
+                    <video controls loop muted playsinline>
+                        <source src="videos/demo2/CogVideoX_I2V.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="video-cell">
+                    <video controls loop muted playsinline>
+                        <source src="videos/demo2/LTX-2B.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="video-cell">
+                    <video controls loop muted playsinline>
+                        <source src="videos/demo2/ConsisID.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="video-cell">
+                    <video controls loop muted playsinline>
+                        <source src="videos/demo2/Wan2.1-I2V.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="video-cell">
+                    <video controls loop muted playsinline>
+                        <source src="videos/demo2/Wan2.2-I2V.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button onclick="playAll()">Play All</button>
+                <button onclick="pauseAll()">Pause All</button>
+                <button onclick="muteAll()">Toggle Mute</button>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Video control functions
+        function playAll() {
+            document.querySelectorAll('video').forEach(video => video.play());
+        }
+
+        function pauseAll() {
+            document.querySelectorAll('video').forEach(video => video.pause());
+        }
+
+        function muteAll() {
+            const videos = document.querySelectorAll('video');
+            const isMuted = videos[0].muted;
+            videos.forEach(video => video.muted = !isMuted);
+        }
+
+        // Auto play on hover
+        document.querySelectorAll('.video-cell').forEach(cell => {
+            const video = cell.querySelector('video');
+            cell.addEventListener('mouseenter', () => video.play());
+            cell.addEventListener('mouseleave', () => video.pause());
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                const videos = document.querySelectorAll('video');
+                if (videos.length > 0) {
+                    videos[0].paused ? playAll() : pauseAll();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
