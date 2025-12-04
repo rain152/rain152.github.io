@@ -19,7 +19,7 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1000px; /*  从 1200px 调小 */
             margin: 0 auto;
             padding: 20px;
         }
@@ -28,31 +28,64 @@
         .header {
             text-align: center;
             padding: 40px 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            color: #333; /* 文字改为深色 */
             margin-bottom: 40px;
-            border-radius: 12px;
+            /* 移除圆角 */
         }
 
         .header h1 {
             font-size: 2.5em;
-            font-weight: 300;
+            font-weight: 700; /* 设置为标准粗体 */
             margin-bottom: 10px;
             line-height: 1.2;
         }
 
+        /* Author Styles */
+        .authors {
+            margin: 30px 0;
+            font-size: 1.0em;
+            line-height: 1.8;
+        }
+        .author-list, .affiliation-list, .contribution-list {
+            margin-bottom: 15px;
+        }
+        .author-list span, .affiliation-list span {
+            margin: 0 10px;
+        }
+
+        /* Resource Links */
+        .resource-links {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        .link-button {
+            display: inline-block;
+            padding: 10px 25px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .link-button:hover {
+            background-color: #f0f0f0;
+            border-color: #ccc;
+        }
+
         .header .subtitle {
             font-size: 1.1em;
-            opacity: 0.9;
+            opacity: 0.7; /* 调整透明度 */
+            color: #555;
         }
 
         /* Section Styles */
         .section {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
-            padding: 30px;
+            /* 移除 background, border-radius, box-shadow, padding */
+            margin-bottom: 40px; /* 增加区域间距 */
+            text-align: center; /* 居中其内部所有标题 */
         }
 
         .section h2 {
@@ -62,18 +95,24 @@
             font-weight: 400;
             border-bottom: 2px solid #667eea;
             padding-bottom: 10px;
+            display: inline-block; /* 使边框跟随文字宽度 */
         }
 
         .section h3 {
             color: #555;
             margin: 20px 0 15px 0;
             font-size: 1.3em;
+            /* text-align: center; 已由父元素处理 */
         }
 
         .section p {
             margin-bottom: 15px;
             color: #666;
             font-size: 1.05em;
+            max-width: 800px; /* 设置文本段落的最大宽度 */
+            margin-left: auto;   /* 左右自动边距使其居中 */
+            margin-right: auto;
+            text-align: left; /* 将段落文本设置为左对齐 */
         }
 
         .placeholder-content {
@@ -89,12 +128,9 @@
         /* Experiments Section - Video Grid */
         .video-grid {
             display: grid;
-            gap: 15px;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
+            gap: 20px 15px; /* 增加行间距 */
+            margin-bottom: 40px; /* 增加表格之间的距离 */
+            /* 移除 background, padding, border-radius, box-shadow */
         }
 
         .video-grid-6-cols {
@@ -106,45 +142,37 @@
         }
 
         .method-label {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #e9ecef;
-            border-radius: 6px;
-            padding: 10px;
+            /* 移除 background, border-radius, padding */
             font-weight: 500;
-            color: #666;
+            color: #555; /* 稍微加深颜色 */
             text-align: center;
+            align-self: end; /* 文字底部对齐 */
+            padding-bottom: 5px; /* 与视频留出一点空间 */
         }
 
         .method-label.featured {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
+            background: none; /* 移除背景 */
+            color: #667eea; /* 使用主题色突出 */
+            font-weight: 700; /* 加粗 */
             position: relative;
         }
 
         .method-label.featured::after {
-            content: "⭐";
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            font-size: 16px;
+            content: ""; /* 移除星星 */
         }
 
         .sample-header {
-            background: #f8f9fa;
-            border-radius: 6px;
+            /* 移除 background, border-radius, border-left */
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 500;
             color: #555;
             text-align: center;
-            border-left: 4px solid #ddd;
         }
 
         .video-cell {
-            border-radius: 6px;
+            border-radius: 8px; /* 轻微的圆角 */
             overflow: hidden;
             background: #f8f9fa;
             aspect-ratio: 16/9;
@@ -203,18 +231,41 @@
             }
 
             .method-image {
-                max-width: 100%;
+                max-width: 80%;
             }
         }
 
         /* Method image styles */
         .method-image {
+            display: block; /* 强制图片为块级元素，使其换行 */
             width: 100%;
             max-width: 100%;
             height: auto;
             border-radius: 8px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            margin: 20px 0;
+            margin: 20px auto; /* 使用 auto 边距使其在块级状态下居中 */
+        }
+        .small-image {
+            display: block;  
+            max-width: 70%; 
+            margin: 20px auto; /* 使图片水平居中 */
+        }
+
+        /* Citation Section */
+        .citation-box {
+            background-color: #e9ecef;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: left;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9em;
+            max-width: 800px; /* 匹配段落宽度 */
+            margin: 0 auto; /* 居中引用框 */
+        }
+
+        .citation-box pre {
+            white-space: pre-wrap; /* 允许长行自动换行 */
+            word-break: break-all; /* 强制长单词换行 */
         }
     </style>
 </head>
@@ -224,17 +275,43 @@
         <div class="header">
             <h1>Collaborative Face Experts Fusion in Video Generation: Boosting Identity
 Consistency Across Large Face Poses</h1>
-            <div class="subtitle">A Novel Approach for High-Quality Face-Consistent Video Generation</div>
+
+            <div class="authors">
+                <div class="author-list">
+                    <span>Yuji Wang<sup>1,*</sup></span>
+                    <span>Moran Li<sup>2,*</sup></span>
+                    <span>Xiaobin Hu<sup>3,*</sup></span>
+                    <span>Ran Yi<sup>1</sup></span>
+                    <span>Jiangning Zhang<sup>2</sup></span>
+                    <span>Chengming Xu<sup>2</sup></span>
+                    <br>
+                    <span>Weijian Cao<sup>2</sup></span>
+                    <span>Yabiao Wang<sup>2</sup></span>
+                    <span>Chengjie Wang<sup>2</sup></span>
+                    <span>Lizhuang Ma<sup>1,†</sup></span>
+                </div>
+                <div class="affiliation-list">
+                    <span><sup>1</sup>Shanghai Jiao Tong University</span>
+                    <span><sup>2</sup>Tencent Youtu Lab</span>
+                    <span><sup>3</sup>National University of Singapore</span>
+                </div>
+                <div class="contribution-list">
+                    <span><sup>*</sup>Equal contribution</span>
+                    <span><sup>†</sup>Corresponding author</span>
+                </div>
+            </div>
+
+            <div class="resource-links">
+                <a href="https://arxiv.org/abs/2508.09476" target="_blank" class="link-button">📄 Paper</a>
+                <a href="https://github.com/rain152/LFA-Video-Generation" target="_blank" class="link-button">💻 Code</a>
+                <a href="https://youtu.be/9YmKu79U9SM" target="_blank" class="link-button">🎥 Demo</a>
+            </div>
         </div>
 
         <!-- Abstract Section -->
         <section class="section">
             <h2>Abstract</h2>
-            <p>Current video generation models struggle with identity preservation under large face poses, primarily facing two challenges: the difficulty in exploring an effective mechanism to integrate identity features into DiT architectures, and the lack of targeted coverage of large face poses in existing open-source video datasets. </p>
-            
-            <p>To address these, we present two key innovations. First, we propose <b>Collaborative Face Experts Fusion (CoFE)</b>, which dynamically fuses complementary signals from three specialized experts within the DiT backbone: an identity expert that captures cross-pose invariant features, a semantic expert that encodes high-level visual context, and a detail expert that preserves pixel-level attributes such as skin texture and color gradients. Second, we introduce a data curation pipeline comprising three key components: Face Constraints to ensure diverse large-pose coverage, Identity Consistency to maintain stable identity across frames, and Speech Disambiguation to align textual captions with actual speaking behavior. This pipeline yields LaFID-180K, a large-scale dataset of pose-annotated video clips designed for identity-preserving video generation.</p>
-            
-            <p>Experimental results on several benchmarks demonstrate that our approach significantly outperforms state-of-the-art methods in face similarity, FID, and CLIP semantic alignment.</p>
+            <p>Current video generation models struggle with identity preservation under large face poses, primarily facing two challenges: the difficulty in exploring an effective mechanism to integrate identity features into DiT architectures, and the lack of targeted coverage of large face poses in existing open-source video datasets. To address these, we present two key innovations. First, we propose <b>Collaborative Face Experts Fusion (CoFE)</b>, which dynamically fuses complementary signals from three specialized experts within the DiT backbone: an identity expert that captures cross-pose invariant features, a semantic expert that encodes high-level visual context, and a detail expert that preserves pixel-level attributes such as skin texture and color gradients. Second, we introduce a data curation pipeline comprising three key components: Face Constraints to ensure diverse large-pose coverage, Identity Consistency to maintain stable identity across frames, and Speech Disambiguation to align textual captions with actual speaking behavior. This pipeline yields LaFID-180K, a large-scale dataset of pose-annotated video clips designed for identity-preserving video generation. Experimental results on several benchmarks demonstrate that our approach significantly outperforms state-of-the-art methods in face similarity, FID, and CLIP semantic alignment.</p>
         </section>
 
         <!-- Method Section -->
@@ -246,7 +323,7 @@ Consistency Across Large Face Poses</h1>
         <!-- Dataset Section -->
         <section class="section">
             <h2>Data Process</h2>
-            <img src="assets/data_process.jpg" alt="Dataset Processing Pipeline" class="method-image">
+            <img src="assets/data_process.jpg" alt="Dataset Processing Pipeline" class="small-image">
         </section>
 
         <!-- Experiments Section -->
@@ -419,39 +496,49 @@ Consistency Across Large Face Poses</h1>
                     </video>
                 </div>
             </div>
+        </section>
 
-            <div class="controls">
-                <button onclick="playAll()">Play All</button>
-                <button onclick="pauseAll()">Pause All</button>
+        <!-- Citation Section -->
+        <section class="section">
+            <h2>Citation</h2>
+            <div class="citation-box">
+                <pre><code>@article{wang2025large,
+  title={From Large Angles to Consistent Faces: Identity-Preserving Video Generation via Mixture of Facial Experts},
+  author={Wang, Yuji and Li, Moran and Hu, Xiaobin and Yi, Ran and Zhang, Jiangning and Xu, Chengming and Cao, Weijian and Wang, Yabiao and Wang, Chengjie and Ma, Lizhuang},
+  journal={arXiv e-prints},
+  pages={arXiv--2508},
+  year={2025}
+}</code></pre>
             </div>
         </section>
     </div>
 
     <script>
-        // Video control functions
-        function playAll() {
-            document.querySelectorAll('video').forEach(video => video.play());
-        }
+        document.addEventListener("DOMContentLoaded", () => {
+            const videos = document.querySelectorAll("video");
 
-        function pauseAll() {
-            document.querySelectorAll('video').forEach(video => video.pause());
-        }
-        // Auto play on hover
-        document.querySelectorAll('.video-cell').forEach(cell => {
-            const video = cell.querySelector('video');
-            cell.addEventListener('mouseenter', () => video.play());
-            cell.addEventListener('mouseleave', () => video.pause());
-        });
+            const options = {
+                root: null, // 使用浏览器视口作为根
+                rootMargin: "0px",
+                threshold: 0.5 // 视频至少 50% 可见时触发
+            };
 
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            if (e.code === 'Space') {
-                e.preventDefault();
-                const videos = document.querySelectorAll('video');
-                if (videos.length > 0) {
-                    videos[0].paused ? playAll() : pauseAll();
-                }
-            }
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        // 元素进入视口，播放视频
+                        entry.target.play();
+                    } else {
+                        // 元素离开视口，暂停视频
+                        entry.target.pause();
+                    }
+                });
+            }, options);
+
+            // 观察页面上的每一个视频
+            videos.forEach(video => {
+                observer.observe(video);
+            });
         });
     </script>
 </body>
