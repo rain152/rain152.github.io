@@ -1,0 +1,2 @@
+[local_style_transfer]
+Paint the vase a deep tomato red.

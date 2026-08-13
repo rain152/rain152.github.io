@@ -1,0 +1,2 @@
+[global_style]
+Apply the principles of abstract art to this video, ensuring seamless temporal consistency across all frames. Infuse each frame with dynamic color gradients, fragmented motion blurs, or non-representational patterns, while preserving the original motion trajectories, character movements, and camera angles. The final output should feel like a cohesive abstract artwork brought to life, with every movement and frame maintaining the integrity of the source video’s narrative flow.

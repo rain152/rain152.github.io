@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="VicEdit: Learning to Edit Videos from Visual In-Context Examples">
+  <meta name="keywords" content="Video Editing, Visual In-Context Learning, Diffusion Transformer, NeurIPS 2026">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VicEdit: Learning to Edit Videos from Visual In-Context Examples</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+
+  <link rel="icon" href="./assets/images/icon.png">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+  <style>
+    .publication-title {
+      font-family: 'Google Sans', sans-serif;
+      font-weight: 500;
+    }
+    .title-col {
+      color: #6C3BD1;
+    }
+    .title-vic {
+      color: #00A6FB;
+    }
+    .title-edit {
+      color: #FF6B6B;
+    }
+    .overview-text {
+      font-size: 1.05rem;
+      line-height: 1.7;
+      max-width: 820px;
+      margin: 1.5rem auto;
+      text-align: justify;
+      color: #222;
+    }
+    .section-title {
+      font-family: 'Google Sans', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 500;
+      margin-bottom: 1rem;
+    }
+    .video-caption {
+      text-align: left;
+      margin-top: 12px;
+      padding: 12px 18px;
+      font-size: 13px;
+      line-height: 1.7;
+      background-color: #f7f8fa;
+      border-radius: 8px;
+      border-left: 3px solid #6C3BD1;
+    }
+    .video-caption .edit-label {
+      color: #ff8c00;
+      font-weight: bold;
+    }
+    .video-caption .source-label {
+      color: #1e70bf;
+      font-weight: bold;
+    }
+    .video-caption .target-label {
+      color: #e91e63;
+      font-weight: bold;
+    }
+    .video-caption .vic-label {
+      color: #6C3BD1;
+      font-weight: bold;
+    }
+    .demo-card {
+      background: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      transition: transform 0.2s;
+    }
+    .demo-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+    }
+    .demo-card img {
+      width: 100%;
+      display: block;
+    }
+    .demo-card .demo-label {
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #555;
+      background: #f0f0f5;
+    }
+    .demo-card .demo-label.ours {
+      color: #fff;
+      background: linear-gradient(135deg, #6C3BD1, #8B5CF6);
+    }
+    .demo-card .demo-label.source {
+      color: #555;
+      background: #e8e8f0;
+    }
+    .demo-card .demo-label.vic {
+      color: #fff;
+      background: linear-gradient(135deg, #00A6FB, #0582CA);
+    }
+
+    .comparison-row {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+    .comparison-item {
+      flex: 1 1 0;
+      min-width: 120px;
+      max-width: 200px;
+    }
+    .comparison-item img {
+      width: 100%;
+      height: 190px;
+      object-fit: cover;
+      border-radius: 8px;
+      display: block;
+    }
+    .comparison-item .method-label {
+      text-align: center;
+      font-size: 11px;
+      font-weight: 600;
+      margin-top: 4px;
+      padding: 3px 0;
+      border-radius: 4px;
+      color: #555;
+      background: #f0f0f5;
+    }
+    .comparison-item .method-label.ours {
+      color: #fff;
+      background: #6C3BD1;
+    }
+    .comparison-group {
+      margin-bottom: 2rem;
+    }
+    .comparison-group .group-header {
+      padding: 10px 16px;
+      background: rgba(108, 59, 209, 0.06);
+      border: 1px solid rgba(108, 59, 209, 0.15);
+      border-radius: 10px;
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+    .comparison-group .group-header .cat-label {
+      color: #800020;
+      font-weight: bold;
+    }
+    .comparison-group .group-header .edit-label {
+      color: #ff8c00;
+      font-weight: bold;
+    }
+
+    .carousel-container {
+      position: relative;
+      overflow: hidden;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.95);
+      padding: 1.5rem;
+    }
+    .carousel-group {
+      display: none;
+      animation: fadeIn 0.4s ease;
+    }
+    .carousel-group.is-active {
+      display: block;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .carousel-button {
+      border: none;
+      border-radius: 999px;
+      padding: 0.6rem 1.5rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: linear-gradient(135deg, #6C3BD1, #8B5CF6);
+      color: #fff;
+      transition: transform 0.2s;
+    }
+    .carousel-button:hover:not(:disabled) {
+      transform: translateY(-1px);
+    }
+    .carousel-button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .highlight-card {
+      background: #f7f8fa;
+      border-radius: 12px;
+      padding: 1.2rem 1.5rem;
+      margin-bottom: 0.8rem;
+      border-left: 3px solid #6C3BD1;
+    }
+    .highlight-card strong {
+      color: #4C1D95;
+    }
+    .hero-title-combined {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: center;
+      text-align: center;
+      font-family: 'Google Sans', sans-serif;
+      line-height: 1.15;
+      margin: 0.3rem 0 0.2rem;
+      max-width: 100%;
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+    .hero-title-combined .title-vic,
+    .hero-title-combined .title-edit {
+      font-size: 3rem;
+      font-weight: 700;
+      line-height: 1.1;
+    }
+    .hero-title-combined .hero-subtitle-inline {
+      font-size: 1.5rem;
+      font-weight: 500;
+      margin-left: 6px;
+      color: #222;
+    }
+    .modality-badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-right: 4px;
+    }
+    .modality-badge.single { background: #E6F1FB; color: #185FA5; }
+    .modality-badge.pair { background: #FBEAF0; color: #993556; }
+    .modality-badge.video { background: #E1F5EE; color: #0F6E56; }
+
+    .results-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin: 1rem 0;
+    }
+    .results-table th {
+      background: #f5f5f5;
+      padding: 10px 6px;
+      text-align: center;
+      border: 1px solid #ddd;
+      font-weight: bold;
+    }
+    .results-table td {
+      padding: 6px;
+      text-align: center;
+      border: 1px solid #ddd;
+    }
+    .results-table tbody tr:hover {
+      background: #f0f0f5;
+    }
+    .results-table .best {
+      font-weight: bold;
+      color: #6C3BD1;
+    }
+    .results-table .ours-row {
+      background: #f3f0ff;
+    }
+
+    .tabs-nav {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .tab-button {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 6px 16px;
+      font-size: 13px;
+      cursor: pointer;
+      background: #fff;
+      transition: all 0.2s;
+    }
+    .tab-button.active {
+      background: #6C3BD1;
+      color: #fff;
+      border-color: #6C3BD1;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    @media (max-width: 640px) {
+      .hero-title-combined .title-vic,
+      .hero-title-combined .title-edit {
+        font-size: 2.2rem !important;
+      }
+      .hero-title-combined .hero-subtitle-inline {
+        font-size: 1.1rem !important;
+        margin-left: 4px;
+      }
+      .hero-body > .container > .columns > .column > img {
+        width: 180px !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+
+          <img src="./assets/images/icon.png" alt="VicEdit Icon"
+               style="width: 240px; height: auto; margin-bottom: 1rem; border-radius: 16px; box-shadow: 0 4px 16px rgba(108,59,209,0.25);">
+
+          <div class="hero-title-combined">
+            <span class="title-vic">Vic</span><span class="title-edit">Edit</span><span class="hero-subtitle-inline">: Learning to Edit Videos from Visual In-Context Examples</span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="#">Yuji Wang</a><sup>1*</sup>,</span>
+            <span class="author-block">
+              <a href="#">Teng Hu</a><sup>1*</sup>,</span>
+            <span class="author-block">
+              <a href="#">Yuheng Chen</a><sup>1</sup>,</span>
+            <span class="author-block">
+              <a href="#">Ran Yi</a><sup>1&dagger;</sup>,</span>
+            <span class="author-block">
+              <a href="#">Han Feng</a><sup>2</sup>,</span>
+            <span class="author-block">
+              <a href="#">Weijian Cao</a><sup>2</sup>,</span>
+            <span class="author-block">
+              <a href="#">Chengjie Wang</a><sup>2</sup>,</span>
+            <span class="author-block">
+              <a href="#">Lizhuang Ma</a><sup>1&dagger;</sup>,</span>
+            <span class="author-block">
+              <a href="#">Jiangning Zhang</a><sup>3&Dagger;</sup>
+            </span>
+          </div>
+
+          <div class="is-size-6 publication-authors" style="color: #888; margin-top: 0.5rem;">
+            <span class="author-block"><sup>1</sup>Shanghai Jiao Tong University</span>
+            &nbsp;&middot;&nbsp;
+            <span class="author-block"><sup>2</sup>Tencent Youtu Lab</span>
+            &nbsp;&middot;&nbsp;
+            <span class="author-block"><sup>3</sup>Zhejiang University</span>
+          </div>
+
+          <div class="is-size-7" style="color: #aaa; margin-top: 0.4rem;">
+            <sup>*</sup>Equal contribution &nbsp;&middot;&nbsp;
+            <sup>&dagger;</sup>Corresponding author
+          </div>
+
+          <div class="column has-text-centered" style="margin-top: 1rem;">
+            <div class="publication-links">
+              <span class="link-block">
+                <a href="#" class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="ai ai-arxiv"></i></span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="#" class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fab fa-github"></i></span>
+                  <span>Code</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://youtu.be/S5wFODR5rr0" class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fas fa-play-circle"></i></span>
+                  <span>Demo</span>
+                </a>
+              </span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <img src="./assets/images/teaser.png" alt="Teaser"
+           style="width: 100%; border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.1);">
+      <p style="text-align: center; margin: 12px auto; font-size: 13px; color: #666; max-width: 700px;">
+        <strong>Top:</strong> Qualitative comparison between VicEdit and text-only baselines. VicEdit precisely resolves
+        stylistic drift (via Single Image), spatial drift (via Image Pair), and static dynamics (via Video Pair).
+        <strong>Bottom:</strong> Architectural evolution from text-only editing to visual in-context editing.
+      </p>
+    </div>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="section-title has-text-centered">Abstract</h2>
+    <div class="overview-text">
+      Despite progress in instruction-based video editing, unimodal textual instructions inherently struggle to convey
+      fine-grained textures and complex dynamics. To bridge this perceptual gap, we propose <strong>Visual In-context
+      Editing</strong>, a new paradigm elevating video editing from textual instructions to multi-modal visual guidance
+      encompassing single image, image pair, and video pair. To facilitate this paradigm, we curate
+      <strong>VicEdit-400K</strong>, the first large-scale dataset for visual in-context video editing with 400K
+      high-quality samples across ten task types. We introduce <strong>VicEdit</strong>, a unified framework bridging
+      visual and textual contexts through <strong>Modality-Adaptive Semantic Distillation (MASD)</strong> and
+      <strong>Dual-Context Injection (DCI)</strong>. Extensive evaluations on VicEdit-Bench demonstrate that VicEdit
+      achieves state-of-the-art performance across both basic instruction editing and visual in-context editing tasks.
+    </div>
+  </div>
+</section>
+
+
+<section class="section" style="background: #f7f8fa;">
+  <div class="container is-max-desktop">
+    <h2 class="section-title has-text-centered">Key Contributions</h2>
+
+    <div class="highlight-card">
+      <strong>1. Visual In-Context Editing Paradigm.</strong>
+      We formulate a unified visual in-context video editing paradigm that extends editing from text-only instructions
+      to multi-modal guidance across
+      <span class="modality-badge single">Single Image</span>
+      <span class="modality-badge pair">Image Pair</span>
+      <span class="modality-badge video">Video Pair</span>
+      references, addressing the expressivity bottleneck of language in conveying textures, spatial layouts, and temporal dynamics.
+    </div>
+
+    <div class="highlight-card">
+      <strong>2. VicEdit-400K Dataset.</strong>
+      The first large-scale dataset for visual in-context video editing, containing 400K high-quality samples across
+      three reference modalities and ten distinct task types, curated through an automated pipeline with multi-dimensional
+      quality filtering.
+    </div>
+
+    <div class="highlight-card">
+      <strong>3. VicEdit Framework.</strong>
+      A unified framework with <em>Modality-Adaptive Semantic Distillation (MASD)</em> for extracting modality-specific
+      semantic tokens and <em>Dual-Context Injection (DCI)</em> for synergistically fusing visual and textual context
+      into the video DiT, achieving state-of-the-art on both base text-driven and visual in-context editing tasks.
+    </div>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="section-title has-text-centered">Visual In-Context Editing Paradigm</h2>
+    <p class="has-text-centered" style="max-width: 700px; margin: 0 auto 1.5rem; font-size: 14px; color: #555;">
+      VicEdit supports three types of visual references, each addressing a critical limitation of text-only instructions.
+    </p>
+
+    <div class="tabs-nav">
+      <button class="tab-button active" data-tab="single">Single Image</button>
+      <button class="tab-button" data-tab="pair">Image Pair</button>
+      <button class="tab-button" data-tab="video">Video Pair</button>
+    </div>
+
+    <div class="tab-content active" id="tab-single">
+      <div class="comparison-group">
+        <div class="group-header">
+          <span class="cat-label">Category: Global Style</span> &middot;
+          <span class="edit-label">Edit prompt:</span> Apply the Pop Art animation style to this video...
+        </div>
+        <div class="comparison-row">
+          <div class="comparison-item">
+            <img src="./assets/videos/intro/Texture/Source.gif" alt="Source">
+            <div class="method-label">Source Video</div>
+          </div>
+          <div class="comparison-item">
+            <img src="./assets/videos/intro/Texture/VIC.png" alt="Reference">
+            <div class="method-label vic" style="background: #00A6FB; color: #fff;">Single Image Ref</div>
+          </div>
+          <div class="comparison-item">
+            <img src="./assets/videos/intro/Texture/Baseline.gif" alt="Baseline">
+            <div class="method-label">Text-Only Baseline</div>
+          </div>
+          <div class="comparison-item">
+            <img src="./assets/videos/intro/Texture/Ours.gif" alt="Ours">
+            <div class="method-label ours">VicEdit (Ours)</div>
+          </div>
+        </div>
+        <p style="font-size: 12px; color: #666; margin-top: 8px; text-align: center;">
+          <strong>Problem solved:</strong> Text-only baselines suffer from stylistic drift. The single image reference
+          precisely anchors the target texture, enabling coherent style transfer.
+        </p>
+      </div>
+    </div>
+
+    <div class="tab-content" id="tab-pair">
+      <div class="comparison-group">
+        <div class="group-header">
+          <span class="cat-label">Category: Background Change</span> &middot;
+          <span class="edit-label">Edit prompt:</span> Replace the background with a vibrant tropical beach scene...
+        </div>
+        <div class="comparison-row">
+          <div class="comparison-item">
+            <img src="./assets/videos/intro/Spatial/Source.gif" alt="Source">
+            <div class="method-label">Source Video</div>
+          </div>
+          <div class="comparison-item">
+            <img src="./assets/videos/intro/Spatial/VIC_src.png" alt="VIC Source">
+            <div class="method-label vic" style="background: #00A6FB; color: #fff;">Image Pair (Before)</div>
+          </div>
+          <div class="comparison-item">
+            <img src="./assets/videos/intro/Spatial/VIC_tgt.png" alt="VIC Target">
+            <div class="method-label vic" style="background: #00A6FB; color: #fff;">Image Pair (After)</div>
+          </div>
+          <div class="comparison-item">
+            <img src="./assets/videos/intro/Spatial/Baseline.gif" alt="Baseline">
+            <div class="method-label">Text-Only Baseline</div>
+          </div>
+          <div class="comparison-item">
+            <img src="./assets/videos/intro/Spatial/Ours.gif" alt="Ours">
+            <div class="method-label ours">VicEdit (Ours)</div>
+          </div>
+        </div>
+        <p style="font-size: 12px; color: #666; margin-top: 8px; text-align: center;">
+          <strong>Problem solved:</strong> Linguistic instructions specify <em>what</em> but not <em>where</em> to edit.
+          The image pair reference intuitively defines spatial anchors that text-only methods fail to exploit.
+        </p>
+      </div>
+    </div>
+
+    <div class="tab-content" id="tab-video">
+      <div class="comparison-group">
+        <div class="group-header">
+          <span class="cat-label">Category: Creative Edit</span> &middot;
+          <span class="edit-label">Edit prompt:</span> Transform the water bottle to a glowing miniature galaxy.
+        </div>
+        <div class="comparison-row">
+          <div class="comparison-item">
+            <img src="./assets/videos/intro/Dynamic/Source.gif" alt="Source">
+            <div class="method-label">Source Video</div>
+          </div>
+          <div class="comparison-item">
+            <img src="./assets/videos/intro/Dynamic/VIC_src.gif" alt="VIC Source">
+            <div class="method-label vic" style="background: #00A6FB; color: #fff;">Video Pair (Before)</div>
+          </div>
+          <div class="comparison-item">
+            <img src="./assets/videos/intro/Dynamic/VIC_tgt.gif" alt="VIC Target">
+            <div class="method-label vic" style="background: #00A6FB; color: #fff;">Video Pair (After)</div>
+          </div>
+          <div class="comparison-item">
+            <img src="./assets/videos/intro/Dynamic/Baseline.gif" alt="Baseline">
+            <div class="method-label">Text-Only Baseline</div>
+          </div>
+          <div class="comparison-item">
+            <img src="./assets/videos/intro/Dynamic/Ours.gif" alt="Ours">
+            <div class="method-label ours">VicEdit (Ours)</div>
+          </div>
+        </div>
+        <p style="font-size: 12px; color: #666; margin-top: 8px; text-align: center;">
+          <strong>Problem solved:</strong> Complex motion dynamics cannot be described by text. The video pair reference
+          provides temporal motion cues that enable vibrant, dynamic edits.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section" style="background: #f7f8fa;">
+  <div class="container is-max-desktop">
+    <h2 class="section-title has-text-centered">Method: VicEdit Framework</h2>
+    <img src="./assets/images/pipeline.png" alt="Method Pipeline"
+         style="width: 100%; border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.1);">
+    <p style="text-align: center; margin: 12px auto; font-size: 13px; color: #666; max-width: 700px;">
+      <strong>VicEdit architecture.</strong> Visual references (single image, image pair, video pair) are processed by
+      <em>Modality-Adaptive Semantic Distillation (MASD)</em> to extract modality-specific semantic tokens. These tokens
+      are then synergistically integrated with textual instructions through <em>Dual-Context Injection (DCI)</em> via
+      cross-attention into the video DiT.
+    </p>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="section-title has-text-centered">VicEdit-400K Dataset</h2>
+
+    <div style="margin-bottom: 2rem;">
+      <img src="./assets/images/data_pipeline.png" alt="Data Pipeline"
+           style="width: 100%; border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.1);">
+      <p style="text-align: center; margin: 10px auto; font-size: 13px; color: #666;">
+        Data construction pipeline comprising four stages: Source Data Filtering, Instruction Synthesis,
+        Visual Reference Generation, and Quality Verification.
+      </p>
+    </div>
+
+    <div>
+      <img src="./assets/images/data_stat.png" alt="Dataset Statistics"
+           style="width: 100%; border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.1);">
+      <p style="text-align: center; margin: 10px auto; font-size: 13px; color: #666;">
+        Statistics of VicEdit-400K: theme analysis, prompt length distribution, frame distribution,
+        editing task distribution, and prompt word cloud.
+      </p>
+    </div>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="section-title has-text-centered">VicEdit-Bench</h2>
+    <img src="./assets/images/bench.png" alt="VicEdit-Bench"
+         style="width: 100%; border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.1);">
+    <p style="text-align: center; margin: 10px auto; font-size: 13px; color: #666;">
+      VicEdit-Bench comprehensively evaluates visual in-context editing across three reference modalities
+      and diverse task types.
+    </p>
+  </div>
+</section>
+
+
+<section class="section" id="demos" style="background: #f7f8fa;">
+  <div class="container is-max-desktop">
+    <h2 class="section-title has-text-centered">Video Editing Demos</h2>
+    <p class="has-text-centered" style="max-width: 700px; margin: 0 auto 1.5rem; font-size: 14px; color: #555;">
+      VicEdit handles diverse editing tasks across both basic instruction editing and visual in-context editing.
+      Each demo shows the source video, the visual in-context reference, and VicEdit's output.
+    </p>
+
+    <div class="carousel-container">
+      <div class="carousel-group is-active" data-group="0">
+        <div class="comparison-row">
+          <div class="comparison-item">
+            <img src="./assets/videos/demos/background_change/Source.gif" alt="Source">
+            <div class="method-label">Source</div>
+          </div>
+          <div class="comparison-item">
+            <img src="./assets/videos/demos/background_change/VIC_src.gif" alt="VIC Src">
+            <div class="method-label vic" style="background: #00A6FB; color: #fff;">VIC Ref (Before)</div>
+          </div>
+          <div class="comparison-item">
+            <img src="./assets/videos/demos/background_change/VIC_tgt.gif" alt="VIC Tgt">
+            <div class="method-label vic" style="background: #00A6FB; color: #fff;">VIC Ref (After)</div>
+          </div>
+          <div class="comparison-item">
+            <img src="./assets/videos/demos/background_change/Ours.gif" alt="Ours">
+            <div class="method-label ours">VicEdit</div>
+          </div>
+        </div>
+        <div class="video-caption">
+          <p><span class="cat-label" style="color: #800020; font-weight: bold;">[background_change]</span>
+          <span class="edit-label">Edit prompt:</span> Replace the background with a dynamic tropical beach scene...</div>
+      </div>
+
+      <div class="carousel-group" data-group="1">
+        <div class="comparison-row">
+          <div class="comparison-item">
+            <img src="./assets/videos/demos/local_change/Source.gif" alt="Source">
+            <div class="method-label">Source</div>
+          </div>
+          <div class="comparison-item">
+            <img src="./assets/videos/demos/local_change/VIC_src.png" alt="VIC Src">
+            <div class="method-label vic" style="background: #00A6FB; color: #fff;">VIC Ref (Before)</div>
+          </div>
+          <div class="comparison-item">
+            <img src="./assets/videos/demos/local_change/VIC_tgt.png" alt="VIC Tgt">
+            <div class="method-label vic" style="background: #00A6FB; color: #fff;">VIC Ref (After)</div>
+          </div>
+          <div class="comparison-item">
+            <img src="./assets/videos/demos/local_change/Ours.gif" alt="Ours">
+            <div class="method-label ours">VicEdit</div>
+          </div>
+        </div>
+        <div class="video-caption">
+          <p><span class="cat-label" style="color: #800020; font-weight: bold;">[local_change]</span>
+          <span class="edit-label">Edit prompt:</span> Replace the man with an elderly gentleman with silver hair and gentle wrinkles...</div>
+      </div>
+
+      <div class="carousel-group" data-group="2">
+        <div class="comparison-row">
+          <div class="comparison-item">
+            <img src="./assets/videos/demos/creative_edit/Source.gif" alt="Source">
+            <div class="method-label">Source</div>
+          </div>
+          <div class="comparison-item">
+            <img src="./assets/videos/demos/creative_edit/VIC_src.gif" alt="VIC Src">
+            <div class="method-label vic" style="background: #00A6FB; color: #fff;">VIC Ref (Before)</div>
+          </div>
+          <div class="comparison-item">
+            <img src="./assets/videos/demos/creative_edit/VIC_tgt.gif" alt="VIC Tgt">
+            <div class="method-label vic" style="background: #00A6FB; color: #fff;">VIC Ref (After)</div>
+          </div>
+          <div class="comparison-item">
+            <img src="./assets/videos/demos/creative_edit/Ours.gif" alt="Ours">
+            <div class="method-label ours">VicEdit</div>
+          </div>
+        </div>
+        <div class="video-caption">
+          <p><span class="cat-label" style="color: #800020; font-weight: bold;">[creative_edit]</span>
+          <span class="edit-label">Edit prompt:</span> Transform the water bottle to a glowing miniature galaxy.</div>
+      </div>
+
+      <div class="carousel-group" data-group="3">
+        <div class="comparison-row">
+          <div class="comparison-item">
+            <img src="./assets/videos/demos/subtitle_edit/Source.gif" alt="Source">
+            <div class="method-label">Source</div>
+          </div>
+          <div class="comparison-item">
+            <img src="./assets/videos/demos/subtitle_edit/VIC_src.gif" alt="VIC Src">
+            <div class="method-label vic" style="background: #00A6FB; color: #fff;">VIC Ref (Before)</div>
+          </div>
+          <div class="comparison-item">
+            <img src="./assets/videos/demos/subtitle_edit/VIC_tgt.gif" alt="VIC Tgt">
+            <div class="method-label vic" style="background: #00A6FB; color: #fff;">VIC Ref (After)</div>
+          </div>
+          <div class="comparison-item">
+            <img src="./assets/videos/demos/subtitle_edit/Ours.gif" alt="Ours">
+            <div class="method-label ours">VicEdit</div>
+          </div>
+        </div>
+        <div class="video-caption">
+          <p><span class="cat-label" style="color: #800020; font-weight: bold;">[subtitle_edit]</span>
+          <span class="edit-label">Edit prompt:</span> Remove the subtitles at the center of the video.</div>
+      </div>
+
+      <div class="carousel-group" data-group="4">
+        <div class="comparison-row">
+          <div class="comparison-item">
+            <img src="./assets/videos/demos/inpainting/Source.gif" alt="Source">
+            <div class="method-label">Source</div>
+          </div>
+          <div class="comparison-item">
+            <img src="./assets/videos/demos/inpainting/VIC_src.gif" alt="VIC Src">
+            <div class="method-label vic" style="background: #00A6FB; color: #fff;">VIC Ref (Before)</div>
+          </div>
+          <div class="comparison-item">
+            <img src="./assets/videos/demos/inpainting/VIC_tgt.gif" alt="VIC Tgt">
+            <div class="method-label vic" style="background: #00A6FB; color: #fff;">VIC Ref (After)</div>
+          </div>
+          <div class="comparison-item">
+            <img src="./assets/videos/demos/inpainting/Ours.gif" alt="Ours">
+            <div class="method-label ours">VicEdit</div>
+          </div>
+        </div>
+        <div class="video-caption">
+          <p><span class="cat-label" style="color: #800020; font-weight: bold;">[inpainting]</span>
+          <span class="edit-label">Edit prompt:</span> The sun is setting over a field of wheat.</div>
+      </div>
+
+      <div class="carousel-group" data-group="5">
+        <div class="comparison-row">
+          <div class="comparison-item">
+            <img src="./assets/videos/demos/outpainting/Source.gif" alt="Source">
+            <div class="method-label">Source</div>
+          </div>
+          <div class="comparison-item">
+            <img src="./assets/videos/demos/outpainting/VIC_src.gif" alt="VIC Src">
+            <div class="method-label vic" style="background: #00A6FB; color: #fff;">VIC Ref (Before)</div>
+          </div>
+          <div class="comparison-item">
+            <img src="./assets/videos/demos/outpainting/VIC_tgt.gif" alt="VIC Tgt">
+            <div class="method-label vic" style="background: #00A6FB; color: #fff;">VIC Ref (After)</div>
+          </div>
+          <div class="comparison-item">
+            <img src="./assets/videos/demos/outpainting/Ours.gif" alt="Ours">
+            <div class="method-label ours">VicEdit</div>
+          </div>
+        </div>
+        <div class="video-caption">
+          <p><span class="cat-label" style="color: #800020; font-weight: bold;">[outpainting]</span>
+          <span class="edit-label">Edit prompt:</span> A view of a train track and a road.</div>
+      </div>
+
+      <div style="text-align: center; margin-top: 1.5rem;">
+        <button class="carousel-button" id="prevDemo" disabled>
+          <i class="fas fa-chevron-left"></i> Previous
+        </button>
+        <span style="margin: 0 1rem; font-size: 13px; color: #888;" id="demoCounter">1 / 6</span>
+        <button class="carousel-button" id="nextDemo" style="margin-left: 8px;">
+          Next <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section" id="comparison">
+  <div class="container is-max-desktop">
+    <h2 class="section-title has-text-centered">Comparison with State-of-the-Art</h2>
+    <p class="has-text-centered" style="max-width: 700px; margin: 0 auto 1.5rem; font-size: 14px; color: #555;">
+      VicEdit outperforms existing methods on both visual in-context editing (VIC) and basic instruction editing tasks.
+    </p>
+
+    <div class="tabs-nav">
+      <button class="tab-button active" data-tab="vic-comp">Visual In-Context Editing</button>
+      <button class="tab-button" data-tab="base-comp">Basic Instruction Editing</button>
+    </div>
+
+    <div class="tab-content active" id="tab-vic-comp">
+      <div class="comparison-group">
+        <div class="group-header">
+          <span class="cat-label">Category: Global Style</span> &middot;
+          <span class="edit-label">Edit prompt:</span> Apply the principles of abstract art to this video...
+        </div>
+        <div class="comparison-row">
+          <div class="comparison-item"><img src="./assets/videos/comparison_vic/global_style/Source.gif" alt="Source"><div class="method-label">Source</div></div>
+          <div class="comparison-item"><img src="./assets/videos/comparison_vic/global_style/VideoCoF.gif" alt="VideoCoF"><div class="method-label">VideoCoF</div></div>
+          <div class="comparison-item"><img src="./assets/videos/comparison_vic/global_style/NovaEdit.gif" alt="NovaEdit"><div class="method-label">NovaEdit</div></div>
+          <div class="comparison-item"><img src="./assets/videos/comparison_vic/global_style/Lucy-Edit.gif" alt="Lucy-Edit"><div class="method-label">Lucy-Edit</div></div>
+          <div class="comparison-item"><img src="./assets/videos/comparison_vic/global_style/Kiwi-Edit.gif" alt="Kiwi-Edit"><div class="method-label">Kiwi-Edit</div></div>
+          <div class="comparison-item"><img src="./assets/videos/comparison_vic/global_style/Ours.gif" alt="Ours"><div class="method-label ours">VicEdit (Ours)</div></div>
+        </div>
+      </div>
+
+      <div class="comparison-group">
+        <div class="group-header">
+          <span class="cat-label">Category: Local Remove</span> &middot;
+          <span class="edit-label">Edit prompt:</span> Track the round wall clock throughout the video and remove it...
+        </div>
+        <div class="comparison-row">
+          <div class="comparison-item"><img src="./assets/videos/comparison_vic/local_remove/Source.gif" alt="Source"><div class="method-label">Source</div></div>
+          <div class="comparison-item"><img src="./assets/videos/comparison_vic/local_remove/VIdeoCoF.gif" alt="VideoCoF"><div class="method-label">VideoCoF</div></div>
+          <div class="comparison-item"><img src="./assets/videos/comparison_vic/local_remove/NovaEdit.gif" alt="NovaEdit"><div class="method-label">NovaEdit</div></div>
+          <div class="comparison-item"><img src="./assets/videos/comparison_vic/local_remove/Lucy-Edit.gif" alt="Lucy-Edit"><div class="method-label">Lucy-Edit</div></div>
+          <div class="comparison-item"><img src="./assets/videos/comparison_vic/local_remove/Kiwi-Edit.gif" alt="Kiwi-Edit"><div class="method-label">Kiwi-Edit</div></div>
+          <div class="comparison-item"><img src="./assets/videos/comparison_vic/local_remove/Ours.gif" alt="Ours"><div class="method-label ours">VicEdit (Ours)</div></div>
+        </div>
+      </div>
+
+      <div class="comparison-group">
+        <div class="group-header">
+          <span class="cat-label">Category: Local Style Transfer</span> &middot;
+          <span class="edit-label">Edit prompt:</span> Paint the vase a deep tomato red.
+        </div>
+        <div class="comparison-row">
+          <div class="comparison-item"><img src="./assets/videos/comparison_vic/local_style/Source.gif" alt="Source"><div class="method-label">Source</div></div>
+          <div class="comparison-item"><img src="./assets/videos/comparison_vic/local_style/VideoCoF.gif" alt="VideoCoF"><div class="method-label">VideoCoF</div></div>
+          <div class="comparison-item"><img src="./assets/videos/comparison_vic/local_style/NovaEdit.gif" alt="NovaEdit"><div class="method-label">NovaEdit</div></div>
+          <div class="comparison-item"><img src="./assets/videos/comparison_vic/local_style/Kiwi-Edit.gif" alt="Kiwi-Edit"><div class="method-label">Kiwi-Edit</div></div>
+          <div class="comparison-item"><img src="./assets/videos/comparison_vic/local_style/Ours_8fps.gif" alt="Ours"><div class="method-label ours">VicEdit (Ours)</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="tab-base-comp">
+      <div class="comparison-group">
+        <div class="group-header">
+          <span class="cat-label">Category: Background Change</span> &middot;
+          <span class="edit-label">Edit prompt:</span> Replace the dynamic southern porch scene with the original static kitchen background...
+        </div>
+        <div class="comparison-row">
+          <div class="comparison-item"><img src="./assets/videos/comparison_base/backgorund_change/Source.gif" alt="Source"><div class="method-label">Source</div></div>
+          <div class="comparison-item"><img src="./assets/videos/comparison_base/backgorund_change/VideoCoF.gif" alt="VideoCoF"><div class="method-label">VideoCoF</div></div>
+          <div class="comparison-item"><img src="./assets/videos/comparison_base/backgorund_change/NovaEdit.gif" alt="NovaEdit"><div class="method-label">NovaEdit</div></div>
+          <div class="comparison-item"><img src="./assets/videos/comparison_base/backgorund_change/Lucy-Edit.gif" alt="Lucy-Edit"><div class="method-label">Lucy-Edit</div></div>
+          <div class="comparison-item"><img src="./assets/videos/comparison_base/backgorund_change/Kiwi-Edit-v1.gif" alt="Kiwi-Edit"><div class="method-label">Kiwi-Edit</div></div>
+          <div class="comparison-item"><img src="./assets/videos/comparison_base/backgorund_change/Ours.gif" alt="Ours"><div class="method-label ours">VicEdit (Ours)</div></div>
+        </div>
+      </div>
+
+      <div class="comparison-group">
+        <div class="group-header">
+          <span class="cat-label">Category: Creative Edit</span> &middot;
+          <span class="edit-label">Edit prompt:</span> Transform the milk instantly into a miniature ocean scene...
+        </div>
+        <div class="comparison-row">
+          <div class="comparison-item"><img src="./assets/videos/comparison_base/creative_edit/Source.gif" alt="Source"><div class="method-label">Source</div></div>
+          <div class="comparison-item"><img src="./assets/videos/comparison_base/creative_edit/VideoCoF.gif" alt="VideoCoF"><div class="method-label">VideoCoF</div></div>
+          <div class="comparison-item"><img src="./assets/videos/comparison_base/creative_edit/NovaEdit.gif" alt="NovaEdit"><div class="method-label">NovaEdit</div></div>
+          <div class="comparison-item"><img src="./assets/videos/comparison_base/creative_edit/Lucy-Edit.gif" alt="Lucy-Edit"><div class="method-label">Lucy-Edit</div></div>
+          <div class="comparison-item"><img src="./assets/videos/comparison_base/creative_edit/Kiwi-Edit.gif" alt="Kiwi-Edit"><div class="method-label">Kiwi-Edit</div></div>
+          <div class="comparison-item"><img src="./assets/videos/comparison_base/creative_edit/Ours.gif" alt="Ours"><div class="method-label ours">VicEdit (Ours)</div></div>
+        </div>
+      </div>
+
+      <div class="comparison-group">
+        <div class="group-header">
+          <span class="cat-label">Category: Local Add</span> &middot;
+          <span class="edit-label">Edit prompt:</span> Overlay an animated blue water bowl on the floor in front of the dog...
+        </div>
+        <div class="comparison-row">
+          <div class="comparison-item"><img src="./assets/videos/comparison_base/local_add/Source.gif" alt="Source"><div class="method-label">Source</div></div>
+          <div class="comparison-item"><img src="./assets/videos/comparison_base/local_add/VideoCoF.gif" alt="VideoCoF"><div class="method-label">VideoCoF</div></div>
+          <div class="comparison-item"><img src="./assets/videos/comparison_base/local_add/NovaEdit.gif" alt="NovaEdit"><div class="method-label">NovaEdit</div></div>
+          <div class="comparison-item"><img src="./assets/videos/comparison_base/local_add/Lucy-Edit.gif" alt="Lucy-Edit"><div class="method-label">Lucy-Edit</div></div>
+          <div class="comparison-item"><img src="./assets/videos/comparison_base/local_add/Kiwi-Edit.gif" alt="Kiwi-Edit"><div class="method-label">Kiwi-Edit</div></div>
+          <div class="comparison-item"><img src="./assets/videos/comparison_base/local_add/Ours.gif" alt="Ours"><div class="method-label ours">VicEdit (Ours)</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section" style="background: #f7f8fa;">
+  <div class="container is-max-desktop">
+    <h2 class="section-title has-text-centered">Quantitative Results</h2>
+
+    <div style="margin-bottom: 2rem;">
+      <h3 class="title is-5 has-text-centered" style="margin-bottom: 0.5rem;">Basic Instruction Editing</h3>
+      <img src="./assets/images/main_exp2.png" alt="Basic Editing Results"
+           style="width: 100%; border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.1);">
+      <p style="text-align: center; margin: 10px auto; font-size: 13px; color: #666;">
+        Quantitative comparison on basic instruction editing tasks. VicEdit achieves competitive or superior
+        performance across all metrics.
+      </p>
+    </div>
+
+    <div>
+      <h3 class="title is-5 has-text-centered" style="margin-bottom: 0.5rem;">Visual In-Context Editing (VicEdit-Bench)</h3>
+      <img src="./assets/images/main_icl.png" alt="VIC Editing Results"
+           style="width: 100%; border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.1);">
+      <p style="text-align: center; margin: 10px auto; font-size: 13px; color: #666;">
+        Quantitative comparison on VicEdit-Bench for visual in-context editing. VicEdit significantly outperforms
+        all baselines across three reference modalities.
+      </p>
+    </div>
+  </div>
+</section>
+
+
+
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="section-title">BibTeX</h2>
+    <pre><code>@inproceedings{vicedit2026,
+  title={VicEdit: Learning to Edit Videos from Visual In-Context Examples},
+  author={Wang, Yuji and Hu, Teng and Chen, Yuheng and Yi, Ran and Feng, Han and Cao, Weijian and Wang, Chengjie and Ma, Lizhuang and Zhang, Jiangning},
+  booktitle={NeurIPS},
+  year={2026}
+}</code></pre>
+  </div>
+</section>
+
+
+<footer class="footer">
+  <div class="container">
+    <div class="content has-text-centered">
+      <div class="columns is-centered">
+        <div class="column is-8">
+          <p style="font-size: 13px; color: #888;">
+            This website is licensed under a
+            <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
+          </p>
+          <p style="font-size: 13px; color: #888;">
+            Website source code based on the
+            <a href="https://nerfies.github.io/">Nerfies</a> project page.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+<script>
+  // Tab switching
+  document.querySelectorAll('.tab-button').forEach(button => {
+    button.addEventListener('click', () => {
+      const tabId = button.dataset.tab;
+      const container = button.closest('.container, section');
+      container.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+      container.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      button.classList.add('active');
+      const target = document.getElementById('tab-' + tabId);
+      if (target) target.classList.add('active');
+    });
+  });
+
+  // Demo carousel
+  (function() {
+    const groups = document.querySelectorAll('.carousel-group');
+    const prevBtn = document.getElementById('prevDemo');
+    const nextBtn = document.getElementById('nextDemo');
+    const counter = document.getElementById('demoCounter');
+    let current = 0;
+
+    function show(idx) {
+      groups.forEach((g, i) => {
+        g.classList.toggle('is-active', i === idx);
+      });
+      prevBtn.disabled = idx === 0;
+      nextBtn.disabled = idx === groups.length - 1;
+      counter.textContent = (idx + 1) + ' / ' + groups.length;
+    }
+
+    prevBtn.addEventListener('click', () => {
+      if (current > 0) { current--; show(current); }
+    });
+    nextBtn.addEventListener('click', () => {
+      if (current < groups.length - 1) { current++; show(current); }
+    });
+
+    show(0);
+  })();
+</script>
+
+</body>
+</html>

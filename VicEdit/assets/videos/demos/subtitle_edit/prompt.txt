@@ -1,0 +1,2 @@
+[subtitle_edit]
+"Remove the subtitles at the center of the video."

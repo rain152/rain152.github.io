@@ -1,0 +1,2 @@
+[inpainting]
+inpaint. prompt: the sun is setting over a field of wheat.

@@ -1,0 +1,2 @@
+[local_add]
+Overlay an animated blue water bowl on the floor in front of the dog, slightly to the left. The bowl should be tracked to the floor surface as the camera moves. The water inside should have gentle ripples and reflections that respond to the lighting changes. All other parts of the video must remain unchanged.

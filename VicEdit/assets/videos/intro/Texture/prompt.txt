@@ -1,0 +1,2 @@
+[global_style]
+Apply the Pop Art animation style to this video, ensuring seamless temporal consistency across all frames. The result should mirror the aesthetic of classic Pop Art, with vivid colors, repetitive patterns, and Ben-Day dots integrated smoothly into each frame. Preserve the original motion, character movements, camera angles, and narrative flow without any abrupt or jarring style changes.

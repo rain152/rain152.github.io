@@ -1,0 +1,2 @@
+[local_remove]
+Track the round wall clock on the wall throughout the video. For each frame, remove the clock and its shadow, then inpaint the wall texture behind it using surrounding areas to ensure a seamless, flicker-free restoration.
