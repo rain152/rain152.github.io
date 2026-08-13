@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PersonaShot — Narrative Continuity in Multi-Shot Video Generation</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans|Noto+Sans|Castoro&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.4/css/academicons.min.css">
+
+<style>
+:root{
+  --blue:#3273dc; --blue-d:#2951ff; --ink:#1a1a2e; --muted:#6b7088;
+  --line:#e6e8f0; --paper:#fff; --bg:#f7f8fc;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Noto Sans","Google Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--bg);line-height:1.7}
+a{color:var(--blue);text-decoration:none}
+img{max-width:100%;display:block;margin:0 auto;border-radius:8px}
+.container{max-width:1100px;margin:0 auto;padding:0 20px}
+
+/* hero */
+.hero{background:linear-gradient(160deg,#0f0c29,#302b63 55%,#24243e);color:#fff;text-align:center;padding:80px 20px 64px}
+.hero h1{font-size:2.8rem;font-weight:800;letter-spacing:-1px;margin-bottom:8px}
+.hero .subtitle{font-size:1.05rem;opacity:.85;max-width:760px;margin:0 auto 22px;font-weight:300}
+.hero .venue{display:inline-block;border:1px solid rgba(255,255,255,.3);padding:5px 20px;border-radius:20px;font-size:.82rem;letter-spacing:1px;margin-bottom:18px}
+.hero .authors{font-size:.95rem;opacity:.9;line-height:1.6}
+.hero .authors sup{color:#ffd479;font-weight:600}
+.hero .affil{font-size:.8rem;opacity:.6;margin:6px 0 24px}
+.links{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.links a{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);color:#fff;padding:9px 18px;border-radius:30px;font-size:.88rem;font-weight:500;transition:.2s}
+.links a:hover{background:rgba(255,255,255,.18)}
+
+/* section */
+section{padding:48px 0 8px}
+h2{font-size:1.6rem;font-weight:700;margin-bottom:18px;padding-bottom:8px;border-bottom:2px solid var(--blue);display:inline-block}
+h3{font-size:1.12rem;margin:22px 0 10px;font-weight:600}
+p{margin:10px 0}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:22px 26px;margin:16px 0;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.caption{text-align:center;color:var(--muted);font-size:.84rem;margin-top:10px}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:18px 0}
+.stat{text-align:center;padding:18px 12px;background:#fff;border-radius:10px;border:1px solid var(--line)}
+.stat .num{font-size:1.7rem;font-weight:800;color:var(--blue)}
+.stat .label{font-size:.76rem;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.4px}
+
+/* pillars */
+.pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin:18px 0}
+.pillar{background:#fff;border-radius:12px;padding:24px 20px;border-top:4px solid var(--blue);border-left:1px solid var(--line);border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+.pillar:nth-child(2){border-top-color:#d05a8f}
+.pillar:nth-child(3){border-top-color:#1ba39c}
+.pillar h4{font-size:1.02rem;margin-bottom:8px;font-weight:700}
+.pillar p{font-size:.86rem;color:var(--muted);line-height:1.6}
+
+/* table / leaderboard */
+.lb-wrap{overflow-x:auto;background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px;margin:16px 0;min-width:100%}
+.lb-wrap::-webkit-scrollbar{height:10px}
+.lb-wrap::-webkit-scrollbar-track{background:#f1f1f1;border-radius:5px}
+.lb-wrap::-webkit-scrollbar-thumb{background:#c1c1c1;border-radius:5px}
+.lb-wrap::-webkit-scrollbar-thumb:hover{background:#a8a8a8}
+table.lb{border-collapse:collapse;font-size:.8rem;min-width:1280px}
+table.lb th,table.lb td{padding:10px 13px;text-align:center;border-bottom:1px solid var(--line);white-space:nowrap}
+table.lb thead th{background:#f0f4ff;font-weight:600;color:#444;font-size:.74rem;cursor:pointer;user-select:none}
+table.lb thead th:hover{background:#e3e9fb}
+table.lb thead th.arrow{color:var(--blue);font-size:.7rem}
+/* dimension group header colors */
+table.lb thead th.group-vq{background:#e7ecfb;color:#2743a8}
+table.lb thead th.group-cp{background:#e5f4ea;color:#1e6b42}
+table.lb thead th.group-aff{background:#fbe9f1;color:#a03068}
+table.lb thead th.group-cin{background:#fdf1dd;color:#9a6a12}
+table.lb thead th[data-key="aggr"]{background:#dbe3fb;color:var(--blue);font-weight:700}
+/* vertical separators between dimension groups */
+table.lb th.dim-start{border-left:3px solid #9fb0e6}
+table.lb td.dim-start{border-left:3px solid #9fb0e6}
+table.lb tbody tr:hover{background:#fafbff}
+table.lb td.method{text-align:left;font-weight:600;padding-left:14px;min-width:150px}
+table.lb td.aggr{background:#eef2ff;font-weight:700;color:var(--blue);border-left:3px solid #9fb0e6;border-right:3px solid #9fb0e6}
+table.lb tbody tr:hover td.aggr{background:#e2e8fd}
+table.lb td.best{background:#e8f5e9;font-weight:700;color:#2e7d32}
+table.lb td.second{background:#fff8e1;font-weight:600;color:#e65100;text-decoration:underline}
+table.lb tbody tr.section-sep td{background:#f0f4ff;font-weight:700;font-size:.84rem;padding:10px 14px;border-top:2px solid #3273dc;border-bottom:1px solid #dee2e6;text-align:left}
+.lb-note{font-size:.8rem;color:var(--muted);margin-top:10px;text-align:center}
+
+/* findings */
+.finding{background:#f5f7ff;border-left:4px solid var(--blue);padding:14px 18px;margin:10px 0;border-radius:0 10px 10px 0}
+.finding h4{font-size:.92rem;margin-bottom:4px;color:var(--blue);font-weight:700}
+.finding p{font-size:.86rem;color:#444}
+
+/* placeholders */
+.placeholder{border:1.5px dashed var(--line);border-radius:12px;padding:24px;text-align:center;color:var(--muted);background:#fff;font-size:.88rem;margin:14px 0}
+.placeholder i{font-size:1.4rem;color:var(--blue);display:block;margin-bottom:8px}
+
+/* sample grid */
+.sample-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
+.sample-grid .card{margin:0}
+@media(max-width:768px){.sample-grid{grid-template-columns:1fr}}
+
+/* bib */
+pre.bib{background:#0f1226;color:#dfe3ff;padding:18px;border-radius:10px;overflow-x:auto;font-family:Consolas,monospace;font-size:.82rem;line-height:1.6}
+.copy-btn{float:right;background:var(--blue);color:#fff;border:none;padding:6px 14px;border-radius:20px;font-size:.78rem;cursor:pointer}
+
+footer{text-align:center;padding:48px 20px 30px;color:var(--muted);font-size:.82rem;margin-top:40px}
+
+@media(max-width:768px){
+  .hero h1{font-size:1.9rem}
+  .card{padding:16px}
+  table.lb{font-size:.68rem}
+}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<header class="hero">
+  <h1>PersonaShot</h1>
+  <p class="subtitle">Benchmarking Person-Centric Narrative Continuity in Multi-Shot Video Generation</p>
+  <p class="authors">
+    Yuji Wang<sup>1∗</sup>, Yuheng Chen<sup>1∗</sup>, Teng Hu<sup>1</sup>, Ran Yi<sup>1</sup>, Yijia Hong<sup>1</sup>, Han Feng<sup>2</sup>, Weijian Cao<sup>2</sup>, Chengjie Wang<sup>2</sup>, Lizhuang Ma<sup>1†</sup>, Jiangning Zhang<sup>3</sup>
+  </p>
+  <p class="affil"><sup>1</sup>Shanghai Jiao Tong University &nbsp;·&nbsp; <sup>2</sup>Tencent Youtu Lab &nbsp;·&nbsp; <sup>3</sup>Zhejiang University &nbsp; <span style="opacity:.8">(∗ equal contribution, † corresponding)</span></p>
+  <div class="links">
+    <a href="#"><i class="ai ai-arxiv"></i> arXiv</a>
+    <a href="#"><i class="fa-brands fa-github"></i> Code</a>
+    <a href="#"><i class="fa-solid fa-database"></i> Data</a>
+    <a href="#leaderboard"><i class="fa-solid fa-trophy"></i> Leaderboard</a>
+  </div>
+</header>
+
+<div class="container">
+
+<!-- ABSTRACT -->
+<section id="abstract">
+  <h2>Abstract</h2>
+  <div class="card">
+    <p>Video generation is rapidly evolving from single-shot clips to <strong>multi-shot narratives</strong>, where the human character serves as the core narrative anchor. However, existing benchmarks mainly assess character appearance or individual-shot quality, without measuring whether physical and emotional states remain coherent across cuts.</p>
+    <p style="margin-top:12px">We introduce <strong>PersonaShot</strong>, the <strong>first person-centric benchmark</strong> for narrative continuity in multi-shot video generation. PersonaShot contains approximately 1,000 multi-shot segments and 16 metrics spanning <strong>physical continuity</strong>, <strong>affective dynamics</strong>, and <strong>cinematic grammar</strong>. We distill reasoning from a large multimodal teacher (Qwen3.5-397B) into lightweight specialist evaluators (Qwen3.5-4B + LoRA), each grounded in the evidence required by its metric, and align them with expert human judgments.</p>
+    <p style="margin-top:12px">Our evaluation reveals distinct capability profiles across state-of-the-art models and a clear gap between perceptual quality and cross-shot narrative continuity.</p>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="num">1,000+</div><div class="label">Multi-Shot Segments</div></div>
+    <div class="stat"><div class="num">5,000+</div><div class="label">Annotated Shots</div></div>
+    <div class="stat"><div class="num">16</div><div class="label">Fine-Grained Metrics</div></div>
+    <div class="stat"><div class="num">3</div><div class="label">Narrative Dimensions</div></div>
+    <div class="stat"><div class="num">5.3</div><div class="label">Avg Shots / Segment</div></div>
+    <div class="stat"><div class="num">&rho;=.73</div><div class="label">Human Alignment</div></div>
+  </div>
+</section>
+
+<!-- DIMENSIONS -->
+<section id="dimensions">
+  <h2>Three Narrative Dimensions</h2>
+  <div class="pillars">
+    <div class="pillar">
+      <h4>Causal Physical Continuity</h4>
+      <p>Spatial Layout, Object State Persistence, Geometric Scale — do character positions, held objects, and proportions remain causally consistent across editing cuts?</p>
+    </div>
+    <div class="pillar">
+      <h4>Affective Dynamics</h4>
+      <p>Expression Naturalness, Facial-Action Temporal Coherence, Emotion-Narrative Alignment, Emotional Arc — do affective states evolve coherently without abrupt resets?</p>
+    </div>
+    <div class="pillar">
+      <h4>Cinematic Grammar</h4>
+      <p>Shot Transition, Transition Rhythm, 180° Rule, Eyeline Match, Directorial Narrative Sequencing — does the sequence follow film-language conventions?</p>
+    </div>
+  </div>
+</section>
+
+<!-- OVERVIEW -->
+<section id="overview">
+  <h2>Overview</h2>
+  <div class="card">
+    <img src="assets/radar.jpg" alt="PersonaShot Overview" style="max-width:75%;margin:0 auto">
+    <p class="caption"><strong>Top:</strong> Qualitative examples illustrating three core dimensions. <strong>Bottom:</strong> Quantitative comparison revealing distinct capability profiles of state-of-the-art models.</p>
+  </div>
+</section>
+
+<!-- DATA -->
+<section id="data">
+  <h2>Data Pipeline</h2>
+  <div class="card">
+    <img src="assets/data.jpg" alt="Data Sources">
+    <p class="caption">PersonaShot adopts a <strong>video-first paradigm</strong>, sourcing from CineDance-1M and OpenHumanVid, processed through a rigorous three-stage pipeline.</p>
+  </div>
+  <div class="card">
+    <h3>Three-Stage Processing</h3>
+    <img src="assets/data_process.jpg" alt="Data Processing Pipeline">
+    <p class="caption"><strong>Stage 1:</strong> Sequence Segmentation &amp; Character Continuity (TransNetV2, 2–15 shots/segment). <strong>Stage 2:</strong> Face Visibility &amp; Quality (RetinaFace + CLIP-IQA). <strong>Stage 3:</strong> Cross-Shot Relation Selection (Qwen-based multimodal reasoning).</p>
+  </div>
+  <div class="card">
+    <h3>Benchmark Statistics</h3>
+    <img src="assets/data_stat.jpg" alt="Dataset Statistics">
+    <p class="caption">Diverse narrative themes, sequence lengths, and framing scales for evaluating character continuity across actions, emotions, and interactions.</p>
+  </div>
+</section>
+
+<!-- METHOD -->
+<section id="method">
+  <h2>Evaluation Framework</h2>
+  <div class="card">
+    <img src="assets/method.jpg" alt="Method Overview">
+    <p class="caption">PersonaShot extends conventional quality assessment with three specialist dimensions. Lightweight evaluators (Qwen3.5-4B + LoRA) are distilled from Qwen3.5-397B via criterion-specific evidence.</p>
+  </div>
+  <div class="card">
+    <h3>Specialist Evaluator Design</h3>
+    <p><strong>Physical Continuity:</strong> Teacher-guided distillation with strict input isolation — annotations used during training but excluded at inference.</p>
+    <p style="margin-top:8px"><strong>Affective Dynamics:</strong> Frame-level Action Unit signals from OpenFace enable AU-aware evaluation based on the Facial Action Coding System (FACS).</p>
+    <p style="margin-top:8px"><strong>Cinematic Grammar:</strong> Two-stage pipeline: CineCap extracts professional film-language descriptions, then a reasoner evaluates via TransNetV2 shot boundaries.</p>
+  </div>
+</section>
+
+<!-- LEADERBOARD -->
+<section id="leaderboard">
+  <h2>Leaderboard</h2>
+  <p class="caption" style="text-align:left;margin-bottom:6px">Click any column header to sort. Bold = best, underlined = second best.</p>
+  <div class="lb-wrap">
+    <table class="lb" id="lbTable">
+      <thead>
+        <tr>
+          <th class="group" colspan="1">Method</th>
+          <th class="group group-vq" colspan="1">Aggregate</th>
+          <th class="group group-vq" colspan="4">Visual Quality and Consistency</th>
+          <th class="group group-cp" colspan="3">Causal Physical Continuity</th>
+          <th class="group group-aff" colspan="4">Affective Dynamics</th>
+          <th class="group group-cin" colspan="4">Cinematic Grammar</th>
+        </tr>
+        <tr id="lbHead">
+          <th data-key="method" data-type="text">Method</th>
+          <th data-key="aggr" data-type="num">Aggr.<span class="arrow"></span></th>
+          <th data-key="vf"  data-type="num">VF<span class="arrow"></span></th>
+          <th data-key="tva" data-type="num">TVA<span class="arrow"></span></th>
+          <th data-key="id"  data-type="num">ID<span class="arrow"></span></th>
+          <th data-key="ss"  data-type="num">SS<span class="arrow"></span></th>
+          <th data-key="slc" data-type="num" class="dim-start">SLC<span class="arrow"></span></th>
+          <th data-key="osp" data-type="num">OSP<span class="arrow"></span></th>
+          <th data-key="gsc" data-type="num">GSC<span class="arrow"></span></th>
+          <th data-key="en"  data-type="num" class="dim-start">EN<span class="arrow"></span></th>
+          <th data-key="fatc" data-type="num">FATC<span class="arrow"></span></th>
+          <th data-key="ena" data-type="num">ENA<span class="arrow"></span></th>
+          <th data-key="eac" data-type="num">EAC<span class="arrow"></span></th>
+          <th data-key="st"  data-type="num" class="dim-start">ST<span class="arrow"></span></th>
+          <th data-key="tra" data-type="num">TRA<span class="arrow"></span></th>
+          <th data-key="r180" data-type="num">180R<span class="arrow"></span></th>
+          <th data-key="em"  data-type="num">EM<span class="arrow"></span></th>
+        </tr>
+      </thead>
+      <tbody id="lbBody"></tbody>
+    </table>
+    <p class="lb-note">
+      <strong>bold</strong> best &nbsp;·&nbsp; <u>underline</u> second.
+      VF=Visual Fidelity, TVA=Text-Video Alignment, ID=Identity, SS=Scene/Style, SLC=Spatial Layout, OSP=Object State Persistence, GSC=Geometric Scale, EN=Expression Naturalness, FATC=Facial-Action Temporal Coherence, ENA=Emotion-Narrative Alignment, EAC=Emotional Arc, ST=Shot Transition, TRA=Transition Rhythm, 180R=180° Rule, EM=Eyeline Match.
+    </p>
+  </div>
+</section>
+
+<!-- FINDINGS -->
+<section id="findings">
+  <h2>Key Findings</h2>
+  <div class="finding"><h4>1. Perceptual quality ≠ narrative continuity</h4><p>ShotStream achieves highest visual fidelity (.994 VF) yet ranks 7th overall (.601) due to weak affective and cinematic performance.</p></div>
+  <div class="finding"><h4>2. Narrative reasoning matters more than prompt granularity</h4><p>Seedance leads overall (.793). Global-prompt systems remain competitive in cinematic grammar and identity.</p></div>
+  <div class="finding"><h4>3. Physical &amp; affective state propagation remain major challenges</h4><p>Models struggle with object-state resets, unstable facial dynamics, and weak emotional trajectories across cuts.</p></div>
+  <div class="finding"><h4>4. Cinematic grammar is largely under-modeled</h4><p>Most systems fail at transition appropriateness, 180° rule compliance, and eyeline matching.</p></div>
+  <div class="finding"><h4>5. Stark divide in long-form cinematic control</h4><p>Seedance (0.865 DNS) vs. open-source LTX-2.3 (0.624) and VGoT (0.535) — long-form narrative planning remains a bottleneck.</p></div>
+</section>
+
+<!-- FAILURES -->
+<section id="failures">
+  <h2>Qualitative Failure Cases</h2>
+  <div class="card">
+    <img src="assets/failure.jpg" alt="Failure Cases">
+    <p class="caption">Representative failures across three dimensions: object state resets, emotion inconsistencies, eyeline mismatches, and inappropriate transitions. Many failures are visually plausible per-shot but emerge across temporal and relational evaluation.</p>
+  </div>
+</section>
+
+<!-- HUMAN -->
+<section id="human">
+  <h2>Human Study &amp; Evaluator Validation</h2>
+  <div class="card">
+    <p style="margin-bottom:14px"><strong>Setup:</strong> 10 domain experts, 25 multi-shot sequences, 4 annotators per sequence. Krippendorff’s α = 0.76. All correlations p &lt; 0.01.</p>
+    <div class="lb-wrap" style="padding:12px">
+    <table class="lb">
+      <thead><tr><th>Dim.</th><th>Criterion</th><th>Spearman ρ ↑</th><th>Pair Acc. ↑</th></tr></thead>
+      <tbody>
+        <tr><td class="method" rowspan="3"><em>Physical</em></td><td>Spatial Layout (SLC)</td><td>0.68</td><td>71.4%</td></tr>
+        <tr><td>Object State (OSP)</td><td>0.74</td><td>76.0%</td></tr>
+        <tr><td>Geometric Scale (GSC)</td><td>0.66</td><td>69.8%</td></tr>
+        <tr><td class="method" rowspan="4"><em>Affective</em></td><td>Expression Naturalness (EN)</td><td>0.70</td><td>71.8%</td></tr>
+        <tr><td>Action Coherence (FATC)</td><td>0.68</td><td>64.8%</td></tr>
+        <tr><td>Narrative Alignment (ENA)</td><td>0.71</td><td>72.5%</td></tr>
+        <tr><td>Arc Coherence (EAC)</td><td>0.67</td><td>68.2%</td></tr>
+        <tr><td class="method" rowspan="5"><em>Cinematic</em></td><td>Narrative Sequencing (DNS)</td><td>0.74</td><td>74.0%</td></tr>
+        <tr><td>Shot Transition (ST)</td><td>0.72</td><td>73.1%</td></tr>
+        <tr><td>Rhythm Alignment (TRA)</td><td>0.69</td><td>70.5%</td></tr>
+        <tr><td>180° Rule (180R)</td><td>0.71</td><td>71.9%</td></tr>
+        <tr><td>Eyeline Match (EM)</td><td>0.65</td><td>67.2%</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="caption" style="margin-top:12px">All 12 specialist criteria evaluated against expert MOS. DNS (ρ=0.74) and OSP (ρ=0.74) show strongest human alignment.</p>
+  </div>
+</section>
+
+<!-- QUALITATIVE -->
+<section id="qualitative">
+  <h2>Qualitative Comparison</h2>
+  <div class="placeholder">
+    <i class="fa-solid fa-photo-film"></i>
+    <strong>Comparison videos coming soon.</strong> An IVEBench-style group carousel will be placed here, showing a source clip followed by every competing method's output with category / edit-prompt labels.
+  </div>
+</section>
+
+<!-- SAMPLES -->
+<section id="samples">
+  <h2>Sample Visualizations</h2>
+  <div class="sample-grid">
+    <div class="card"><img src="assets/sample1.jpg" alt="Sample 1"></div>
+    <div class="card"><img src="assets/sample2.jpg" alt="Sample 2"></div>
+  </div>
+</section>
+
+<!-- CONCLUSION + BIBTEX -->
+<section id="bibtex">
+  <h2>Conclusion &amp; BibTeX</h2>
+  <div class="card">
+    <p>PersonaShot is the <strong>first person-centric benchmark</strong> for narrative continuity in multi-shot video generation. Through 16 metrics and human-aligned specialist evaluators, it reveals that current generators remain limited in preserving persistent character states, modeling emotional evolution, and following cinematic conventions across shots. We hope PersonaShot serves as both a rigorous testbed and a catalyst for next-generation video foundation models with authentic storytelling capabilities.</p>
+  </div>
+  <div class="card">
+    <button class="copy-btn" onclick="copyBib()">Copy</button>
+    <pre class="bib" id="bibText">@article{personashot2027,
+  title     = {PersonaShot: Benchmarking Person-Centric Narrative Continuity in Multi-Shot Video Generation},
+  author    = {Wang, Yuji and Chen, Yuheng and Hu, Teng and Yi, Ran and Hong, Yijia and Feng, Han and Cao, Weijian and Wang, Chengjie and Ma, Lizhuang and Zhang, Jiangning},
+  journal   = {arXiv preprint},
+  year      = {2027}
+}</pre>
+  </div>
+</section>
+
+</div>
+
+<footer>
+  <p>PersonaShot · AAAI 2027</p>
+  <p style="margin-top:5px;font-size:.76rem">Data: CineDance-1M &amp; OpenHumanVid · Evaluators: Qwen3.5-397B → Qwen3.5-4B+LoRA</p>
+</footer>
+
+<script>
+/* Leaderboard data + sortable table */
+const KEYS = ["vf","tva","id","ss","slc","osp","gsc","en","fatc","ena","eac","st","tra","r180","em","aggr"];
+
+/* Shot-Level Prompt Conditioning */
+const LB_SHOT = [
+  {method:"Seedance",        vf:.981,tva:.752,id:.673,ss:.762,slc:.778,osp:.928,gsc:.947,en:.907,fatc:.562,ena:.778,eac:.617,st:.837,tra:.658,r180:.818,em:.813,aggr:.793},
+  {method:"HoloCine",        vf:.853,tva:.797,id:.582,ss:.718,slc:.647,osp:.862,gsc:.893,en:.792,fatc:.384,ena:.677,eac:.343,st:.723,tra:.517,r180:.712,em:.687,aggr:.687},
+  {method:"STAGE",           vf:.827,tva:.703,id:.507,ss:.752,slc:.623,osp:.818,gsc:.852,en:.718,fatc:.453,ena:.628,eac:.443,st:.677,tra:.503,r180:.667,em:.642,aggr:.661},
+  {method:"LTX-2.3",         vf:.892,tva:.718,id:.572,ss:.733,slc:.677,osp:.832,gsc:.857,en:.758,fatc:.427,ena:.583,eac:.403,st:.683,tra:.512,r180:.683,em:.648,aggr:.673},
+  {method:"MultiShotMaster", vf:.849,tva:.697,id:.557,ss:.653,slc:.604,osp:.852,gsc:.884,en:.781,fatc:.458,ena:.596,eac:.442,st:.622,tra:.482,r180:.623,em:.603,aggr:.655},
+  {method:"LongLive",        vf:.972,tva:.458,id:.532,ss:.753,slc:.697,osp:.697,gsc:.803,en:.687,fatc:.383,ena:.418,eac:.348,st:.684,tra:.468,r180:.697,em:.687,aggr:.626},
+  {method:"ShotStream",      vf:.994,tva:.377,id:.548,ss:.673,slc:.668,osp:.573,gsc:.742,en:.677,fatc:.387,ena:.383,eac:.367,st:.688,tra:.497,r180:.692,em:.693,aggr:.601},
+  {method:"CineTrans",       vf:.795,tva:.557,id:.538,ss:.682,slc:.572,osp:.697,gsc:.708,en:.613,fatc:.378,ena:.503,eac:.358,st:.594,tra:.537,r180:.605,em:.587,aggr:.586},
+  {method:"EchoShot",        vf:.937,tva:.507,id:.463,ss:.488,slc:.482,osp:.758,gsc:.871,en:.802,fatc:.453,ena:.448,eac:.432,st:.503,tra:.478,r180:.488,em:.482,aggr:.581}
+];
+
+/* Global-Prompt Conditioning */
+const LB_GLOBAL = [
+  {method:"Seedance", vf:.973,tva:.712,id:.642,ss:.733,slc:.738,osp:.908,gsc:.937,en:.882,fatc:.532,ena:.743,eac:.588,st:.808,tra:.627,r180:.788,em:.783,aggr:.766},
+  {method:"LTX-2.3",  vf:.818,tva:.523,id:.697,ss:.823,slc:.697,osp:.703,gsc:.758,en:.683,fatc:.403,ena:.453,eac:.348,st:.697,tra:.472,r180:.703,em:.677,aggr:.636},
+  {method:"VGoT",     vf:.988,tva:.418,id:.683,ss:.648,slc:.627,osp:.608,gsc:.881,en:.868,fatc:.388,ena:.477,eac:.357,st:.643,tra:.557,r180:.682,em:.683,aggr:.638}
+];
+
+/* compute best/second per sub-table */
+function getHighlights(rows){
+  const h={};
+  KEYS.forEach(k=>{
+    const vals=rows.map(r=>r[k]).sort((a,b)=>b-a);
+    h[k]={best:vals[0],second:vals[1]};
+  });
+  return h;
+}
+const H_SHOT = getHighlights(LB_SHOT);
+const H_GLOBAL = getHighlights(LB_GLOBAL);
+
+function renderLB(){
+  const tb = document.getElementById("lbBody");
+  tb.innerHTML = "";
+  /* Shot-Level */
+  const sep1 = document.createElement("tr");
+  sep1.className = "section-sep";
+  sep1.innerHTML = `<td colspan="17"><em>Shot-Level Prompt Conditioning</em></td>`;
+  tb.appendChild(sep1);
+  LB_SHOT.forEach(r=> tb.appendChild(makeRow(r,H_SHOT)));
+  /* Global-Prompt */
+  const sep2 = document.createElement("tr");
+  sep2.className = "section-sep";
+  sep2.innerHTML = `<td colspan="17"><em>Global-Prompt Conditioning</em></td>`;
+  tb.appendChild(sep2);
+  LB_GLOBAL.forEach(r=> tb.appendChild(makeRow(r,H_GLOBAL)));
+}
+
+/* dimension group start columns (for vertical separators) */
+const DIM_START = new Set(["slc","en","st"]);
+
+function makeRow(r,hl){
+  const tr = document.createElement("tr");
+  let html = `<td class="method">${r.method}</td>`;
+  /* Aggregate first (highlighted), then the rest */
+  const order = ["aggr", ...KEYS.filter(k=>k!=="aggr")];
+  order.forEach(k=>{
+    const v=r[k], b=hl[k].best, s=hl[k].second;
+    let cls="", wrap=v.toFixed(3);
+    if(k==="aggr"){ cls=' class="aggr"'; }
+    else if(DIM_START.has(k)){ cls=' class="dim-start"'; }
+    else if(v===b){ cls=' style="font-weight:700;color:#2e7d32;background:#e8f5e9"'; }
+    else if(v===s){ cls=' style="font-weight:600;color:#e65100;background:#fff8e1;text-decoration:underline"'; }
+    html += `<td${cls}>${wrap}</td>`;
+  });
+  tr.innerHTML = html;
+  return tr;
+}
+
+let curKey=null, curDir=1;
+document.getElementById("lbHead").addEventListener("click",e=>{
+  const th=e.target.closest("th"); if(!th) return;
+  const key=th.dataset.key, type=th.dataset.type;
+  if(type!=="num" && type!=="text") return;
+  if(curKey===key) curDir*=-1; else { curKey=key; curDir=(key==="method")?1:-1; }
+  const sorter = (a,b)=> type==="num" ? (a[key]-b[key])*curDir : String(a[key]).localeCompare(String(b[key]))*curDir;
+  LB_SHOT.sort(sorter);
+  LB_GLOBAL.sort(sorter);
+  /* recompute highlights after sort */
+  Object.assign(H_SHOT, getHighlights(LB_SHOT));
+  Object.assign(H_GLOBAL, getHighlights(LB_GLOBAL));
+  document.querySelectorAll("#lbHead th").forEach(h=>{h.classList.remove("sorted");h.querySelector(".arrow").textContent="";});
+  th.classList.add("sorted");
+  th.querySelector(".arrow").textContent = curDir>0 ? " ▲" : " ▼";
+  renderLB();
+});
+function copyBib(){
+  const t=document.getElementById("bibText").textContent;
+  navigator.clipboard.writeText(t).then(()=>{
+    const b=document.querySelector(".copy-btn"), o=b.textContent; b.textContent="Copied!";
+    setTimeout(()=>b.textContent=o,1500);
+  });
+}
+renderLB();
+</script>
+
+</body>
+</html>
