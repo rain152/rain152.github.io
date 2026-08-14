@@ -22,16 +22,16 @@ img{max-width:100%;display:block;margin:0 auto;border-radius:8px}
 .container{max-width:1100px;margin:0 auto;padding:0 20px}
 
 /* hero */
-.hero{background:linear-gradient(160deg,#0f0c29,#302b63 55%,#24243e);color:#fff;text-align:center;padding:80px 20px 64px}
+.hero{background:linear-gradient(160deg,#f2f4fb,#e4eaf8 55%,#d9e1f5);color:var(--ink);text-align:center;padding:80px 20px 64px}
 .hero h1{font-size:2.8rem;font-weight:800;letter-spacing:-1px;margin-bottom:8px}
-.hero .subtitle{font-size:1.05rem;opacity:.85;max-width:760px;margin:0 auto 22px;font-weight:300}
-.hero .venue{display:inline-block;border:1px solid rgba(255,255,255,.3);padding:5px 20px;border-radius:20px;font-size:.82rem;letter-spacing:1px;margin-bottom:18px}
+.hero .subtitle{font-size:1.05rem;opacity:.75;max-width:760px;margin:0 auto 22px;font-weight:300}
+.hero .venue{display:inline-block;border:1px solid rgba(50,115,220,.25);padding:5px 20px;border-radius:20px;font-size:.82rem;letter-spacing:1px;margin-bottom:18px}
 .hero .authors{font-size:.95rem;opacity:.9;line-height:1.6}
-.hero .authors sup{color:#ffd479;font-weight:600}
+.hero .authors sup{color:var(--blue);font-weight:600}
 .hero .affil{font-size:.8rem;opacity:.6;margin:6px 0 24px}
 .links{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-.links a{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);color:#fff;padding:9px 18px;border-radius:30px;font-size:.88rem;font-weight:500;transition:.2s}
-.links a:hover{background:rgba(255,255,255,.18)}
+.links a{display:inline-flex;align-items:center;gap:8px;background:rgba(50,115,220,.08);border:1px solid rgba(50,115,220,.25);color:var(--blue);padding:9px 18px;border-radius:30px;font-size:.88rem;font-weight:500;transition:.2s}
+.links a:hover{background:rgba(50,115,220,.15)}
 
 /* section */
 section{padding:48px 0 8px}
@@ -115,6 +115,8 @@ footer{text-align:center;padding:48px 20px 30px;color:var(--muted);font-size:.82
 
 <!-- HERO -->
 <header class="hero">
+  <img src="./assets/icon.png" alt="PersonaShot Icon"
+       style="width: 280px; height: auto; margin-bottom: 1rem; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.15);">
   <h1>PersonaShot</h1>
   <p class="subtitle">Benchmarking Person-Centric Narrative Continuity in Multi-Shot Video Generation</p>
   <p class="authors">
@@ -343,7 +345,7 @@ footer{text-align:center;padding:48px 20px 30px;color:var(--muted);font-size:.82
 </div>
 
 <footer>
-  <p>PersonaShot · AAAI 2027</p>
+  <p>PersonaShot</p>
   <p style="margin-top:5px;font-size:.76rem">Data: CineDance-1M &amp; OpenHumanVid · Evaluators: Qwen3.5-397B → Qwen3.5-4B+LoRA</p>
 </footer>
 
